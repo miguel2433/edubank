@@ -31,15 +31,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
-app.options(
-  "*",
-  cors({
-    origin: ["https://edubank-eight.vercel.app", "http://localhost:5173"],
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+
 app.use(rateLimit({ windowMs: 60 * 1000, max: 100 }));
 app.use(auditoriaGlobal);
 
