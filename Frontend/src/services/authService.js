@@ -19,7 +19,7 @@ export const authService = {
   },
 
   // 🔹 Login
-  async login(credentials) {
+  async   login(credentials) {
     const res = await fetch(`${API_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
