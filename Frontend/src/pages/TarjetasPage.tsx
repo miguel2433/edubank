@@ -8,6 +8,7 @@ import { tarjetaService, type Tarjeta, type EstadoTarjeta } from '../services/ta
 interface TarjetaConMascara extends Omit<Tarjeta, 'NumeroTarjeta' | 'Tipo' | 'Estado'> {
     NumeroTarjeta: string; // Número con máscara
     Tipo: string; // 'credito' | 'debito' como string para compatibilidad
+    
     Estado: string; // 'activa' | 'inactiva' | 'bloqueada' como string para compatibilidad
 }
 
