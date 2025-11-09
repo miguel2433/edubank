@@ -1,21 +1,26 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { authService } from "../services/authService";
+import { authService } from "../services/authService.js";
 
 export default function ProtectedRoute({ children }) {
-  const [isAuth, setIsAuth] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [auth, setAuth] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const user = await authService.me();
-      setIsAuth(!!user);
+    const verificarSesion = async () => {
+      try {
+        const user = await authService.me();
+        setAuth(!!user);
+      } catch {
+        setAuth(false);
+      } finally {
+        setLoading(false);
+      }
     };
-    checkAuth();
+    verificarSesion();
   }, []);
 
-  if (isAuth === null) {
-    return <p className="text-center mt-10">Verificando sesión...</p>;
-  }
+  if (loading) return <p className="text-center">Verificando sesión...</p>;
 
-  return isAuth ? children : <Navigate to="/login" />;
+  return auth ? children : <Navigate to="/login" replace />;
 }
