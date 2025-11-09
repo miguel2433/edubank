@@ -1,0 +1,39 @@
+### Usuarios
+
+GET http://localhost:3000/usuarios
+
+###
+GET http://localhost:3000/usuarios/2
+
+###
+PUT http://localhost:3000/usuarios/2
+Content-Type: application/json
+
+{
+  "Nombre": "Calor"
+}
+
+###
+POST http://localhost:3000/usuarios/register
+Content-Type: application/json
+
+{
+  "Nombre": "Miguel Verduguez",
+  "DNI": "3289512",
+  "Email": "miguel.vidal@gmail.com",
+  "Telefono": "011-1234-5678",
+  "Direccion": "Av. Siempre Viva 742",
+  "PasswordHash": "123",
+  "IdSucursal": 1
+}
+###
+DELETE http://localhost:3000/usuarios/3
+
+###
+POST http://localhost:3000/usuarios/login
+Content-Type: application/json
+
+{
+  "Email": "juan.gonzales@gmail.com",
+  "PasswordHash": "123"
+}
