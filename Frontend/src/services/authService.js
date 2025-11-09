@@ -51,6 +51,7 @@ export const authService = {
       method: "GET",
       credentials: "include",
     });
+    console.log(res);
 
     if (!res.ok) return null; // No hay sesión
     return res.json();

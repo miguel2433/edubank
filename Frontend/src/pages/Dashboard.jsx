@@ -1,3 +1,4 @@
+import React from "react";
 import { authService } from "../services/authService";
 
 export default function Dashboard() {
