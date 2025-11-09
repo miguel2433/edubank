@@ -121,7 +121,7 @@ export const usuarioController = {
           message: "Login exitoso",
         });
     } catch (error) {
-      console.error("🔥 ERROR LOGIN:", error);
+      console.error("ERROR LOGIN:", error);
       res.status(500).json({ error: error.message });
     }
   },
@@ -129,7 +129,7 @@ export const usuarioController = {
     try {
       res.clearCookie("access_token", {
         httpOnly: true,
-        secure: false, // local no necesita HTTPS
+        secure: true, 
         sameSite: "none", // permite que la cookie funcione en front local
         maxAge: 1000 * 60 * 60, // 1 hora
         path: "/",
