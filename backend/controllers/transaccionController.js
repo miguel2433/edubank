@@ -26,7 +26,7 @@ export const transaccionController = {
     },
 
     async crear(req, res) {
-        console.log("BODY",req.body)
+        
         try {
             const nuevaTransaccion = await transaccionRepository.crear(req.body);
 
