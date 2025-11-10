@@ -48,10 +48,6 @@ export const MisCuentas = () => {
       [name]: type === "checkbox" ? checked : value,
     });
   };
-
-
-
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -116,6 +112,7 @@ export const MisCuentas = () => {
           </div>
         ))}
       </div>}
+      {isModalOpen && <ModalNuevaCuenta setIsModalOpen={setIsModalOpen} setCuentas={setCuentas} />}
     </div>
     
   );
