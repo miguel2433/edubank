@@ -233,14 +233,21 @@ async put(id, datos) {
                 break;
         }
     },
-	async transaccionesDelUsuario(id){
-		const cuentas = await db("Transaccion")
-		  .where({IdUsuario: id});
-		
-		  if(!cuentas){
-			throw new Error("El id del usuario no existe")
-		  }
-		
-		return cuentas
-	}
+    async transaccionesDelUsuario(id) {
+      const cuentas = await db("Cuenta").where({ IdUsuario: id });
+
+      if (!cuentas || cuentas.length === 0) {
+        throw new Error("El usuario no tiene cuentas registradas");
+      }
+
+
+      const idsCuentas = cuentas.map((c) => c.IdCuenta);
+
+      const transacciones = await db("Transaccion")
+        .whereIn("IdCuentaOrigen", idsCuentas)
+        .orWhereIn("IdCuentaDestino", idsCuentas);
+
+      return transacciones;
+    }
+
 };
