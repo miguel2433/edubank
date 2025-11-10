@@ -7,6 +7,9 @@ import { MisCuentas } from "./pages/MisCuentas.jsx";
 import { Transacciones } from "./pages/Transacciones.jsx";
 import { Layout } from "./components/Layout.jsx";
 import { useState } from "react";
+import { Perfil } from "./pages/Perfil.jsx";
+import { Tarjetas } from "./pages/Targetas.jsx";
+import { Prestamos } from "./pages/Prestamos.jsx";
 
 // export default function App() {
 //   return (
@@ -52,6 +55,30 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Transacciones />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/perfil"
+        element={
+          <ProtectedRoute>
+            <Perfil />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/tarjetas"
+        element={
+          <ProtectedRoute>
+            <Tarjetas />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/prestamos"
+        element={
+          <ProtectedRoute>
+            <Prestamos />
           </ProtectedRoute>
         }
       />

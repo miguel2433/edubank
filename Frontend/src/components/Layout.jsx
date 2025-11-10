@@ -28,9 +28,9 @@ export const Layout = ({ children }) => {
     { icon: Home, label: "Dashboard", path: "/dashboard" },
     { icon: CreditCard, label: "Mis Cuentas", path: "/cuentas" },
     { icon: ArrowUpDown, label: "Transacciones", path: "/transacciones" },
-    // { icon: CreditCard, label: "Tarjetas", path: "/tarjetas" },
-    // { icon: DollarSign, label: "Préstamos", path: "/prestamos" },
-    // { icon: User, label: "Perfil", path: "/perfil" },
+    { icon: CreditCard, label: "Tarjetas", path: "/tarjetas" },
+    { icon: DollarSign, label: "Préstamos", path: "/prestamos" },
+    { icon: User, label: "Perfil", path: "/perfil" },
   ];
 
   return (
