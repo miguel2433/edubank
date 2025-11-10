@@ -218,7 +218,7 @@ export const FormularioPerfil = ({}) => {
                 <Building className="w-4 h-4" />
                 Sucursal
               </label>
-              <p className="text-gray-900">{datos.sucursal}</p>
+              <p className="text-gray-900">{datos.sucursal.Nombre}</p>
             </div>
           </div>
         </div>
