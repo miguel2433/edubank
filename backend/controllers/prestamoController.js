@@ -81,4 +81,21 @@ export const prestamoController = {
             res.status(500).json({ message: "Error al eliminar el préstamo" });
         }
     },
+    async getPrestamosUsuario(req, res) {
+        try {
+            const { id } = req.params;
+            const prestamos = await prestamoRepository.prestamosDelUsuario(id);
+            return res.status(200).json(prestamos);
+        } catch (error) {
+            console.error("Error en prestamoController.put:", error);
+            
+            let errores = {};
+            try {
+                errores = JSON.parse(error.message);
+            } catch {
+                errores.general = error.message;
+            }
+            return res.status(400).json({ errores });
+        }
+    }
 };

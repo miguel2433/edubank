@@ -137,5 +137,13 @@ export const prestamoRepository = {
         await db("Prestamo").where({ IdPrestamo: id }).delete();
         return prestamo;
     },
+    async prestamosDelUsuario(id) {
+      const prestamos = await db("Prestamo").where({ IdUsuario: id });
 
+      if (!prestamos || prestamos.length === 0) {
+        throw new Error("El usuario no tiene prestamos registradas");
+      }
+
+     return prestamos
+    }
 };
