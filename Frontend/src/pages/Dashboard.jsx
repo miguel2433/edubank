@@ -1,10 +1,13 @@
 import { useState } from "react";
 import React from "react";
 import {Eye, EyeOff, TrendingUp, TrendingDown, ArrowUpDown, Plus, DollarSign, CreditCard} from "lucide-react";
+import { Link } from "react-router-dom";
+import { ModalTransferencia } from "../components/ModalTransferencia";
 
 export const Dashboard = () => {
   
   const [mostrarSaldo, setMostrarSaldo] = useState(true);
+  const [modalTransferencia, setModalTransferencia] = useState(false);
   
   const cuentas = [
     { id: 1, tipo: 'Caja de Ahorro', saldo: 150000, cbu: '0000003100012345678901', alias: 'juan.ahorro' },
@@ -60,7 +63,7 @@ export const Dashboard = () => {
       <div className="bg-white rounded-xl p-6 border border-gray-200">
         <h3 className="text-lg font-semibold mb-4">Acciones Rápidas</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <button className="flex flex-col items-center gap-2 p-4 rounded-lg hover:bg-gray-50 transition-colors">
+          <button onClick={() => setModalTransferencia(true)} className="flex flex-col items-center gap-2 p-4 rounded-lg hover:bg-gray-50 transition-colors">
             <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
               <ArrowUpDown className="w-6 h-6 text-blue-600" />
             </div>
@@ -136,6 +139,9 @@ export const Dashboard = () => {
           ))}
         </div>
       </div>
+      {modalTransferencia && (
+        <ModalTransferencia cerrar={() => setModalTransferencia(false)} cuentaOrigen={cuentas[0]} />
+      )}
     </div>
   );
 };

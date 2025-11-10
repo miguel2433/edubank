@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Perfil } from "./pages/Perfil.jsx";
 import { Tarjetas } from "./pages/Targetas.jsx";
 import { Prestamos } from "./pages/Prestamos.jsx";
+import { ModalTransferencia } from "./components/ModalTransferencia.jsx";
 
 // export default function App() {
 //   return (
@@ -79,6 +80,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Prestamos />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/transferencia"
+        element={
+          <ProtectedRoute>
+            <ModalTransferencia />
           </ProtectedRoute>
         }
       />
