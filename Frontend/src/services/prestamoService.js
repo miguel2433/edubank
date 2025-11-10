@@ -34,5 +34,22 @@ export const prestamoService = {
     }
 
     return res.json();
+    },
+    async PagarPrestamo(data,IdPrestamo) {
+    const res = await fetch(`${API_URL}/pagar/${IdPrestamo}`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+        "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Error al crear prestamo del usuario");
+    }
+
+    return res.json();
     }
 };

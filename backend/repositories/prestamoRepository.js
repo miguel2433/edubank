@@ -142,5 +142,32 @@ export const prestamoRepository = {
       }
 
      return prestamos
+    },
+    async pagarPrestamo(id, cuotasPagadas, alias) {
+        const [prestamo] = await db("Prestamo").where({ IdPrestamo: id });
+        if (!prestamo) throw new Error("Préstamo no encontrado");
+
+        if (prestamo.Estado === "pagado") throw new Error("Este préstamo ya está pagado");
+        if (cuotasPagadas + prestamo.Pagado > prestamo.PlazoMeses)
+            throw new Error("Las cuotas pagadas sobrepasan lo que hay que pagar");
+
+        const montoAdecrementar = cuotasPagadas * prestamo.CuotaMensual;
+
+        await db.transaction(async (trx) => {
+            // Actualizar préstamo
+            const nuevoPagado = prestamo.Pagado + cuotasPagadas;
+            const estado = nuevoPagado === prestamo.PlazoMeses ? "pagado" : prestamo.Estado;
+
+            await trx("Prestamo")
+                .where({ IdPrestamo: id })
+                .update({ Pagado: nuevoPagado, Estado: estado });
+
+            // Decrementar saldo de la cuenta
+            await trx("Cuenta")
+                .where({ Alias: alias })
+                .decrement("Saldo", montoAdecrementar);
+        });
+
+        return { success: true, montoPagado: montoAdecrementar, cuotasPagadas: cuotasPagadas };
     }
 };
