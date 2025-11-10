@@ -51,25 +51,7 @@ export const MisCuentas = () => {
 
 
 
-  if (cuentas.length === 0) {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-900">Mis Cuentas</h2>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 hover:cursor-pointer"
-          >
-            <Plus className="w-5 h-5" />
-            Nueva Cuenta sdad
-          </button>
-        </div>
-        <p className="text-gray-600">No tenés cuentas registradas.</p>
-        {/* Modal para nueva cuenta */}
-        {isModalOpen && <ModalNuevaCuenta setIsModalOpen={setIsModalOpen} />}
-      </div>
-    );
-  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -82,7 +64,9 @@ export const MisCuentas = () => {
           Nueva Cuenta
         </button>
       </div>
-
+      {  cuentas.length === 0 ? 
+      <p className="text-gray-600">No tenés cuentas registradas.</p>
+      :      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {cuentas.map((cuenta) => (
           <div
@@ -131,8 +115,8 @@ export const MisCuentas = () => {
             </div>
           </div>
         ))}
-        
-      </div>
+      </div>}
     </div>
+    
   );
 };
