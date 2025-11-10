@@ -24,9 +24,8 @@ export const FormularioPerfil = ({}) => {
     Telefono: "",
     Direccion: "",
     DNI: "",
-    sucursal: [],
+    sucursal: "",
     IdUsuario: "",
-    
   });
 
   const [datosTemp, setDatosTemp] = useState(datos);
@@ -53,7 +52,7 @@ export const FormularioPerfil = ({}) => {
         Telefono: usuario.Telefono || "",
         Direccion: usuario.Direccion || "",
         DNI: usuario.DNI || "",
-        sucursal: [],
+        sucursal: "",
       });
       setDatosTemp({
         IdUsuario: usuario.IdUsuario,
@@ -62,7 +61,7 @@ export const FormularioPerfil = ({}) => {
         Telefono: usuario.Telefono || "",
         Direccion: usuario.Direccion || "",
         DNI: usuario.DNI || "",
-        sucursal: [],
+        sucursal: "",
       });
     }
   }, [usuario]);
