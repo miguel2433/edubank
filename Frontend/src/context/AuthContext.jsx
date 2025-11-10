@@ -6,6 +6,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [usuario, setUsuario] = useState(null);
   const [cargando, setCargando] = useState(true);
+  console.log("usuario identificado",usuario)
 
   useEffect(() => {
     const verificarSesion = async () => {

@@ -11,8 +11,7 @@ export const MisCuentas = () => {
   const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-
-  console.log("isModalOpen", isModalOpen);
+  console.log("mis cuentas usuario",usuario)
 
   useEffect(() => {
     const fetchCuentas = async () => {
