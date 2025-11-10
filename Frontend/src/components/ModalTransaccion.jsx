@@ -14,7 +14,7 @@ export const ModalTransaccion = ({ cerrar, onTransaccionCreada }) => {
   const [formData, setFormData] = useState({
     Tipo: "deposito",
     IdCuentaOrigen: null,
-    IdCuentaDestino: null,
+    aliasDestino: null,
     Monto: "",
     Descripcion: "",
     Estado: "completado",
@@ -70,7 +70,7 @@ export const ModalTransaccion = ({ cerrar, onTransaccionCreada }) => {
       ...formData,
       Tipo: tipo,
       IdCuentaOrigen: null,
-      IdCuentaDestino: null,
+      aliasDestino: null
     });
   };
 
@@ -78,15 +78,15 @@ export const ModalTransaccion = ({ cerrar, onTransaccionCreada }) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: name.includes("IdCuenta") ? (value ? parseInt(value) : null) : value,
+      [name]: value
     });
   };
 
   const validarPaso1 = () => {
-    const { Tipo, IdCuentaOrigen, IdCuentaDestino } = formData;
+    const { Tipo, IdCuentaOrigen, aliasDestino } = formData;
 
     // Validaciones según tipo de transacción
-    if (Tipo === "deposito" && !IdCuentaDestino) {
+    if (Tipo === "deposito" && !aliasDestino) {
       alert("Debe seleccionar una cuenta destino para el depósito");
       return false;
     }
@@ -96,12 +96,12 @@ export const ModalTransaccion = ({ cerrar, onTransaccionCreada }) => {
       return false;
     }
 
-    if (Tipo === "transferencia" && (!IdCuentaOrigen || !IdCuentaDestino)) {
+    if (Tipo === "transferencia" && (!IdCuentaOrigen || !aliasDestino)) {
       alert("Debe seleccionar cuenta origen y destino para la transferencia");
       return false;
     }
 
-    if (Tipo === "transferencia" && IdCuentaOrigen === IdCuentaDestino) {
+    if (Tipo === "transferencia" && IdCuentaOrigen === aliasDestino) {
       alert("La cuenta origen y destino no pueden ser la misma");
       return false;
     }
@@ -145,12 +145,12 @@ export const ModalTransaccion = ({ cerrar, onTransaccionCreada }) => {
 
       // Agregar cuentas según el tipo
       if (formData.Tipo === "deposito") {
-        transaccionData.IdCuentaDestino = formData.IdCuentaDestino;
+        transaccionData.aliasDestino = formData.aliasDestino;
       } else if (formData.Tipo === "retiro") {
         transaccionData.IdCuentaOrigen = formData.IdCuentaOrigen;
       } else if (formData.Tipo === "transferencia") {
         transaccionData.IdCuentaOrigen = formData.IdCuentaOrigen;
-        transaccionData.IdCuentaDestino = formData.IdCuentaDestino;
+        transaccionData.aliasDestino = formData.aliasDestino;
       } else if (formData.Tipo === "pago") {
         transaccionData.IdCuentaOrigen = formData.IdCuentaOrigen;
       }
@@ -319,8 +319,8 @@ export const ModalTransaccion = ({ cerrar, onTransaccionCreada }) => {
                     </select> */}
                     <input
                       type="text"
-                      name="IdCuentaDestino"
-                      value={formData.IdCuentaDestino || ""}
+                      name="aliasDestino"
+                      value={formData.aliasDestino || ""}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required

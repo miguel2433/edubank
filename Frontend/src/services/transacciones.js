@@ -44,6 +44,7 @@ export const transaccionService = {
   },
 
   async crear(data) {
+    data.IdCuentaOrigen = Number(data.IdCuentaOrigen);
     const res = await fetch(`${API_URL}`, {
       method: "POST",
       credentials: "include",
