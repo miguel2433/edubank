@@ -62,11 +62,20 @@ export const transaccionRepository = {
 
 
     async crear(datos) {
+      const { aliasDestino } = datos;
+      
+      const idCuentaDestino = await db("Cuenta").where({ Alias: aliasDestino }).select("IdCuenta").first();
+
+      if (!idCuentaDestino) {
+          throw new Error("No se encontró la cuenta destino");
+      }
+      
         const nuevaTransaccion = CrearTransaccionSchema.parse(datos);
 
+        nuevaTransaccion.IdCuentaDestino = idCuentaDestino;
 
         const transaccionParaBD = {
-            ...nuevaTransaccion
+            ...nuevaTransaccion,
         };
 
         const [id] = await db("Transaccion").insert(transaccionParaBD);
