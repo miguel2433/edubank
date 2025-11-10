@@ -1,25 +1,40 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import { CheckCircle, Plus } from "lucide-react";
 import { ModalPrestamo } from "../components/ModalPrestamo";
+import { useAuth } from "../context/AuthContext";
+import { prestamoService } from "../services/prestamoService";
 
 export const Prestamos = () => {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [montoSolicitado, setMontoSolicitado] = useState(50000);
   const [plazo, setPlazo] = useState(12);
+  const [prestamos, setPrestamos] = useState([]);
+  const {usuario,cargando} = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error,setError] = useState("")
 
-  const prestamos = [
-    {
-      id: 1,
-      monto: 200000,
-      tasaInteres: 10.5,
-      plazoMeses: 24,
-      cuotaMensual: 9458,
-      fechaInicio: "2024-12-01",
-      estado: "aprobado",
-      cuotasPagadas: 2,
-      cuotasPendientes: 22,
-    },
-  ];
+  useEffect(() => {
+    const fetchPrestamos = async () => {
+      if (!usuario) return; // 🔹 Esperar al usuario
+      console.log(usuario);
+      try {
+        const data = await prestamoService.getPrestamosDelUsuario(
+          usuario.IdUsuario
+        );
+
+        setPrestamos(data);
+      } catch (err) {
+        console.error(err);
+        setError("No se pudieron cargar las cuentas");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPrestamos();
+  }, [usuario]);
+
+
 
   const calcularCuota = (monto, tasa, meses) => {
     const tasaMensual = tasa / 100 / 12;
@@ -32,10 +47,14 @@ export const Prestamos = () => {
   const cuotaEstimada = calcularCuota(montoSolicitado, 10.5, plazo);
 
   const handleSolicitarPrestamo = () => {
-    // Aquí iría la lógica para solicitar el préstamo
     console.log('Solicitando préstamo:', { montoSolicitado, plazo, cuotaEstimada });
     setModalAbierto(false);
   };
+  if (cargando || loading)
+    return <p className="text-gray-600">Cargando cuentas...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
+  if (!usuario)
+    return <p className="text-gray-600">Iniciá sesión para ver tus cuentas.</p>;
 
   return (
     <div className="space-y-6">
@@ -63,12 +82,12 @@ export const Prestamos = () => {
                   Préstamo Personal
                 </h3>
                 <p className="text-sm text-gray-500">
-                  Solicitado el {prestamo.fechaInicio}
+                  Solicitado el {prestamo.FechaInicio.slice(0,10)}
                 </p>
               </div>
               <span className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium w-fit">
                 <CheckCircle className="w-4 h-4" />
-                {prestamo.estado}
+                {prestamo.Estado}
               </span>
             </div>
 
@@ -76,25 +95,25 @@ export const Prestamos = () => {
               <div>
                 <p className="text-sm text-gray-600 mb-1">Monto prestado</p>
                 <p className="text-xl font-bold text-gray-900">
-                  ${prestamo.monto.toLocaleString()}
+                  ${prestamo.Monto.toLocaleString()}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600 mb-1">Tasa de interés</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {prestamo.tasaInteres}%
+                  {prestamo.TasaInteres}%
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600 mb-1">Cuota mensual</p>
                 <p className="text-xl font-bold text-gray-900">
-                  ${prestamo.cuotaMensual.toLocaleString()}
+                  ${prestamo.CuotaMensual.toLocaleString()}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600 mb-1">Plazo total</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {prestamo.plazoMeses} meses
+                  {prestamo.PlazoMeses} meses
                 </p>
               </div>
             </div>
@@ -104,7 +123,7 @@ export const Prestamos = () => {
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Progreso de pago</span>
                 <span className="font-medium text-gray-900">
-                  {prestamo.cuotasPagadas} de {prestamo.plazoMeses} cuotas
+                  0 de {prestamo.plazoMeses} cuotas
                   pagadas
                 </span>
               </div>
@@ -113,7 +132,7 @@ export const Prestamos = () => {
                   className="bg-blue-600 h-3 rounded-full transition-all duration-300"
                   style={{
                     width: `${
-                      (prestamo.cuotasPagadas / prestamo.plazoMeses) * 100
+                      (10 / prestamo.plazoMeses) * 100
                     }%`,
                   }}
                 />

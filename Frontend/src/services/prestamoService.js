@@ -6,6 +6,10 @@ export const prestamoService = {
       method: "GET",
       credentials: "include",
     });
+    if (res.status === 404) {
+      // Usuario sin prestamos → devolver array vacío
+      return [];
+    }
 
     if (!res.ok) {
       const error = await res.json();

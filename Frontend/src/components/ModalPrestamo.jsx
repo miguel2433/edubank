@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { prestamoService } from "../services/prestamoService";
 
 export const ModalPrestamo = ({
   isOpen,
@@ -11,6 +13,49 @@ export const ModalPrestamo = ({
   onSolicitarPrestamo
 }) => {
   if (!isOpen) return null;
+    const {usuario} = useAuth();
+    const [formData, setFormData] = useState({
+      Monto: 0,
+      TasaInteres: 0,
+      PlazoMeses: 0,
+      Estado: "",
+      FechaFin: "",
+      CuotaMensual: 0
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const prestamoData = {
+        ...formData,
+        IdUsuario: usuario.IdUsuario, // 🔸 Vinculamos con el usuario logueado
+      };
+
+      await cuentasService.prestamoService(prestamoData);
+
+      // 🔹 Actualizar la lista de cuentas en el componente padre
+      const cuentasActualizadas = await prestamoService.getPrestamosDelUsuario(usuario.IdUsuario);
+      setCuentas(cuentasActualizadas);
+
+      // 🔹 Cerrar modal y resetear formulario
+      setIsModalOpen(false);
+      setFormData({
+        IdTipoCuenta: 1,
+        IdSucursal: 1,
+        CBU: "",
+        Alias: "",
+        Saldo: "",
+        Activa: true,
+      });
+    } catch (error) {
+      console.error("Error al crear la cuenta:", error);
+      alert(error.message || "Error al crear la cuenta");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/15 flex items-center justify-center z-50 p-4">

@@ -29,7 +29,7 @@ export const prestamoSchema = z.object({
 		.positive({ message: "El plazo debe ser positivo" }),
 	FechaInicio: z.coerce.date({
 		invalid_type_error: "La fecha de inicio debe ser una fecha válida",
-	}),
+	}).optional(),
 	FechaFin: z.coerce
 		.date({
 			invalid_type_error: "La fecha de fin debe ser una fecha válida",
