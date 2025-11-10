@@ -76,11 +76,7 @@ export const crearCuentaSchema = z.object({
 			invalid_type_error: "El saldo debe ser un número",
 		})
 		.default(0.0),
-	Activa: z
-		.boolean({
-			invalid_type_error: "Activa debe ser true o false",
-		})
-		.default(true),
+	Activa: z.union([z.boolean(), z.number().transform((n) => Boolean(n))]),
 	FechaApertura: z.union([z.string().datetime(), z.date()]).optional()
 });
 
