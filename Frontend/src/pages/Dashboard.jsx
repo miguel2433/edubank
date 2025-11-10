@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import {Eye, EyeOff, TrendingUp, TrendingDown, ArrowUpDown, Plus, DollarSign, CreditCard} from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  TrendingUp,
+  TrendingDown,
+  ArrowUpDown,
+  Plus,
+  DollarSign,
+  CreditCard,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { ModalTransferencia } from "../components/ModalTransferencia";
@@ -7,57 +16,52 @@ import { cuentasService } from "../services/cuentasService";
 import { transaccionService } from "../services/transacciones";
 
 export const Dashboard = () => {
-  
   const [mostrarSaldo, setMostrarSaldo] = useState(true);
   const [modalTransferencia, setModalTransferencia] = useState(false);
   const [cuentas, setCuentas] = useState([]);
   const [transacciones, setTransacciones] = useState([]);
   const { usuario, cargando } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  
-    useEffect(() => {
-      const fetchCuentas = async () => {
-        if (!usuario) return; //  Esperar al usuario
-        console.log(usuario);
-        try {
-          const data = await cuentasService.getCuentasDelUsuario(
-            usuario.IdUsuario
-          );
-          console.log("data cuentas", data);
-          setCuentas(data);
-        } catch (err) {
-          console.error(err);
-          setError("No se pudieron cargar las cuentas");
-        } finally {
-          setLoading(false);
-        }
-      };
 
-      fetchCuentas();
-    }, [usuario]);
+  useEffect(() => {
+    const fetchCuentas = async () => {
+      if (!usuario) return; //  Esperar al usuario
+      console.log(usuario);
+      try {
+        const data = await cuentasService.getCuentasDelUsuario(
+          usuario.IdUsuario
+        );
+        console.log("data cuentas", data);
+        setCuentas(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    useEffect(() => {
-      const fetchCuentas = async () => {
-        if (!usuario) return; // Esperar al usuario
-        console.log(usuario);
-        try {
-          const data = await transaccionService.conseguirTransaccionesDelUsuario(
-            usuario.IdUsuario
-          );
-          console.log("data transacciones", data);
-          setTransacciones(data);
-        } catch (err) {
-          console.error(err);
-          setError("No se pudieron cargar las transacciones");
-        } finally {
-          setLoading(false);
-        }
-      };
+    fetchCuentas();
+  }, [usuario]);
 
-      fetchCuentas();
-    }, [usuario]);
+  useEffect(() => {
+    const fetchCuentas = async () => {
+      if (!usuario) return; // Esperar al usuario
+      console.log(usuario);
+      try {
+        const data = await transaccionService.conseguirTransaccionesDelUsuario(
+          usuario.IdUsuario
+        );
+        console.log("data transacciones", data);
+        setTransacciones(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchCuentas();
+  }, [usuario]);
 
   if (cargando || loading)
     return <p className="text-gray-600">Cargando cuentas...</p>;
@@ -79,11 +83,15 @@ export const Dashboard = () => {
           <div className="flex justify-between items-start mb-4">
             <h3 className="text-gray-600 text-sm font-medium">Saldo Total</h3>
             <button onClick={() => setMostrarSaldo(!mostrarSaldo)}>
-              {mostrarSaldo ? <Eye className="w-5 h-5 text-gray-400" /> : <EyeOff className="w-5 h-5 text-gray-400" />}
+              {mostrarSaldo ? (
+                <Eye className="w-5 h-5 text-gray-400" />
+              ) : (
+                <EyeOff className="w-5 h-5 text-gray-400" />
+              )}
             </button>
           </div>
           <p className="text-3xl font-bold text-gray-900">
-            {mostrarSaldo ? '$200,000' : '••••••'}
+            {mostrarSaldo ? "$200,000" : "••••••"}
           </p>
           <p className="text-sm text-green-600 mt-2 flex items-center gap-1">
             <TrendingUp className="w-4 h-4" />
@@ -92,14 +100,22 @@ export const Dashboard = () => {
         </div>
 
         <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <h3 className="text-gray-600 text-sm font-medium mb-4">Mis Cuentas</h3>
-          <p className="text-3xl font-bold text-gray-900">{cuentas.length || 0}</p>
+          <h3 className="text-gray-600 text-sm font-medium mb-4">
+            Mis Cuentas
+          </h3>
+          <p className="text-3xl font-bold text-gray-900">
+            {cuentas.length || 0}
+          </p>
           <p className="text-sm text-gray-500 mt-2">Cuentas activas</p>
         </div>
 
         <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <h3 className="text-gray-600 text-sm font-medium mb-4">Transacciones</h3>
-          <p className="text-3xl font-bold text-gray-900">{transacciones.length || 0}</p>
+          <h3 className="text-gray-600 text-sm font-medium mb-4">
+            Transacciones
+          </h3>
+          <p className="text-3xl font-bold text-gray-900">
+            {transacciones.length || 0}
+          </p>
           <p className="text-sm text-gray-500 mt-2">Este mes</p>
         </div>
       </div>
@@ -108,7 +124,10 @@ export const Dashboard = () => {
       <div className="bg-white rounded-xl p-6 border border-gray-200">
         <h3 className="text-lg font-semibold mb-4">Acciones Rápidas</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <button onClick={() => setModalTransferencia(true)} className="flex flex-col items-center gap-2 p-4 rounded-lg hover:bg-gray-50 transition-colors">
+          <button
+            onClick={() => setModalTransferencia(true)}
+            className="flex flex-col items-center gap-2 p-4 rounded-lg hover:bg-gray-50 transition-colors"
+          >
             <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
               <ArrowUpDown className="w-6 h-6 text-blue-600" />
             </div>
@@ -139,26 +158,41 @@ export const Dashboard = () => {
       <div className="bg-white rounded-xl p-6 border border-gray-200">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">Mis Cuentas</h3>
-          <button className="text-blue-600 text-sm font-medium hover:underline">Ver todas</button>
+          <button className="text-blue-600 text-sm font-medium hover:underline">
+            Ver todas
+          </button>
         </div>
         <div className="space-y-3">
           {cuentas.length === 0 ? (
             <div className="p-8 text-center">
-              <p className="text-gray-500 mb-2">No tienes cuentas registradas</p>
-              <p className="text-sm text-gray-400">Crea una cuenta para comenzar</p>
+              <p className="text-gray-500 mb-2">
+                No tienes cuentas registradas
+              </p>
+              <p className="text-sm text-gray-400">
+                Crea una cuenta para comenzar
+              </p>
             </div>
           ) : (
             cuentas.map((cuenta) => (
-              <div key={cuenta.IdCuenta} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div
+                key={cuenta.IdCuenta}
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+              >
                 <div>
-                  <p className="font-semibold text-gray-900">{cuenta.tipoCuenta.Nombre}</p>
+                  <p className="font-semibold text-gray-900">
+                    {cuenta.tipoCuenta.Nombre}
+                  </p>
                   <p className="text-sm text-gray-500">{cuenta.Alias}</p>
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-gray-900">
-                    {mostrarSaldo ? `$${cuenta.Saldo.toLocaleString()}` : '••••••'}
+                    {mostrarSaldo
+                      ? `$${cuenta.Saldo.toLocaleString()}`
+                      : "••••••"}
                   </p>
-                  <p className="text-xs text-gray-500">{cuenta.CBU.slice(-4)}</p>
+                  <p className="text-xs text-gray-500">
+                    {cuenta.CBU.slice(-4)}
+                  </p>
                 </div>
               </div>
             ))
@@ -170,28 +204,50 @@ export const Dashboard = () => {
       <div className="bg-white rounded-xl p-6 border border-gray-200">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">Transacciones Recientes</h3>
-          <button className="text-blue-600 text-sm font-medium hover:underline">Ver todas</button>
+          <button className="text-blue-600 text-sm font-medium hover:underline">
+            Ver todas
+          </button>
         </div>
         <div className="space-y-3">
           {transacciones.length === 0 ? (
             <div className="p-8 text-center">
-              <p className="text-gray-500 mb-2">No hay transacciones registradas</p>
-              <p className="text-sm text-gray-400">Tus movimientos aparecerán aquí</p>
+              <p className="text-gray-500 mb-2">
+                No hay transacciones registradas
+              </p>
+              <p className="text-sm text-gray-400">
+                Tus movimientos aparecerán aquí
+              </p>
             </div>
           ) : (
             transacciones.map((tx) => (
-              <div key={tx.IdTransaccion} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition-colors">
+              <div
+                key={tx.IdTransaccion}
+                className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition-colors"
+              >
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.Tipo === "deposito" ? 'bg-green-100' : 'bg-red-100'}`}>
-                    {tx.Tipo === "deposito" ? <TrendingUp className="w-5 h-5 text-green-600" /> : <TrendingDown className="w-5 h-5 text-red-600" />}
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      tx.Tipo === "deposito" ? "bg-green-100" : "bg-red-100"
+                    }`}
+                  >
+                    {tx.Tipo === "deposito" ? (
+                      <TrendingUp className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <TrendingDown className="w-5 h-5 text-red-600" />
+                    )}
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">{tx.Tipo}</p>
                     <p className="text-sm text-gray-500">{tx.Fecha}</p>
                   </div>
                 </div>
-                <p className={`font-bold ${tx.Tipo === "deposito" ? 'text-green-600' : 'text-red-600'}`}>
-                  {tx.Monto > 0 ? '+' : ''}${Math.abs(tx.Monto).toLocaleString()}
+                <p
+                  className={`font-bold ${
+                    tx.Tipo === "deposito" ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  {tx.Monto > 0 ? "+" : ""}$
+                  {Math.abs(tx.Monto).toLocaleString()}
                 </p>
               </div>
             ))
@@ -199,7 +255,10 @@ export const Dashboard = () => {
         </div>
       </div>
       {modalTransferencia && (
-        <ModalTransferencia cerrar={() => setModalTransferencia(false)} cuentaOrigen={cuentas[0]} />
+        <ModalTransferencia
+          cerrar={() => setModalTransferencia(false)}
+          cuentaOrigen={cuentas[0]}
+        />
       )}
     </div>
   );

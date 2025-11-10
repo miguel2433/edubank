@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { CheckCircle, Plus } from "lucide-react";
+import { CheckCircle, Plus, DollarSign } from "lucide-react";
 import { ModalPrestamo } from "../components/ModalPrestamo";
+import { ModalPagarPrestamo } from "../components/ModalPagarPrestamo";
 import { useAuth } from "../context/AuthContext";
 import { prestamoService } from "../services/prestamoService";
 
 export const Prestamos = () => {
   const [modalAbierto, setModalAbierto] = useState(false);
+  const [modalPagarAbierto, setModalPagarAbierto] = useState(false);
+  const [prestamoSeleccionado, setPrestamoSeleccionado] = useState(null);
   const [montoSolicitado, setMontoSolicitado] = useState(50000);
   const [plazo, setPlazo] = useState(12);
   const [prestamos, setPrestamos] = useState([]);
@@ -45,6 +48,17 @@ export const Prestamos = () => {
 
   const handlePrestamoCreado = () => {
     fetchPrestamos();
+  };
+
+  const handleAbrirModalPago = (prestamo) => {
+    setPrestamoSeleccionado(prestamo);
+    setModalPagarAbierto(true);
+  };
+
+  const handlePagoExitoso = () => {
+    fetchPrestamos();
+    setModalPagarAbierto(false);
+    setPrestamoSeleccionado(null);
   };
 
   if (cargando || loading) return <p className="text-gray-600">Cargando préstamos...</p>;
@@ -118,6 +132,19 @@ export const Prestamos = () => {
                   />
                 </div>
               </div>
+
+              {/* Botón de pagar */}
+              {prestamo.Estado !== "pagado" && cuotasPagadas < prestamo.PlazoMeses && (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <button
+                    onClick={() => handleAbrirModalPago(prestamo)}
+                    className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-medium"
+                  >
+                    <DollarSign className="w-5 h-5" />
+                    Pagar cuotas
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}
@@ -132,6 +159,16 @@ export const Prestamos = () => {
         setPlazo={setPlazo}
         cuotaEstimada={cuotaEstimada}
         onPrestamoCreado={handlePrestamoCreado}
+      />
+
+      <ModalPagarPrestamo
+        isOpen={modalPagarAbierto}
+        onClose={() => {
+          setModalPagarAbierto(false);
+          setPrestamoSeleccionado(null);
+        }}
+        prestamo={prestamoSeleccionado}
+        onPagoExitoso={handlePagoExitoso}
       />
     </div>
   );
