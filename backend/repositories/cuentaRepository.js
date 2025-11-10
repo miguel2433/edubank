@@ -115,5 +115,15 @@ export const cuentaRepository = {
 		await db("Cuenta").where({ idCuenta: Number(id) }).delete();
 
 		return { ...cuentaAeliminar }; // devuelve objeto plano
+	},
+	async cuentasDelUsuario(id){
+		const cuentas = await db("Cuenta")
+		  .where({IdUsuario: id});
+		
+		  if(!cuentas){
+			throw new Error("El id del usuario no existe")
+		  }
+		
+		return cuentas
 	}
 };

@@ -64,5 +64,18 @@ export const cuentaController = {
 			console.error("Error en cuentaController.delete:", error);
 			res.status(500).json({ message: "Error al eliminar cuenta" });
 		}
+	},
+	async getCuentasDelUsuario(req,res){
+		try{
+			const {id} = req.params;
+			const cuentas = await cuentaRepository.cuentasDelUsuario(id);
+			return res.status(200).json(cuentas)
+		}
+		catch(error){
+			console.error("Erroe en cuentaController.getCuentasDelUsuario:", error)
+			res.status(500).json({
+				message:"Error al conseguir cuentas del usuario"
+			})
+		}
 	}
 };
