@@ -62,9 +62,7 @@ export const prestamoRepository = {
         }
 
         // Formatear fechas
-        const fechaInicioMySQL = nuevoPrestamo.FechaInicio 
-            ? new Date(nuevoPrestamo.FechaInicio).toISOString().slice(0, 19).replace("T", " ")
-            : new Date().toISOString().slice(0, 19).replace("T", " ");
+
 
         const fechaFinMySQL = nuevoPrestamo.FechaFin
             ? new Date(nuevoPrestamo.FechaFin).toISOString().slice(0, 19).replace("T", " ")
@@ -72,7 +70,6 @@ export const prestamoRepository = {
 
         const prestamoParaBD = {
             ...nuevoPrestamo,
-            FechaInicio: fechaInicioMySQL,
             FechaFin: fechaFinMySQL
         };
 

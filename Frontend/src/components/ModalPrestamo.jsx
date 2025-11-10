@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { prestamoService } from "../services/prestamoService";
 
@@ -10,48 +10,41 @@ export const ModalPrestamo = ({
   plazo,
   setPlazo,
   cuotaEstimada,
-  onSolicitarPrestamo
+  onPrestamoCreado
 }) => {
-  if (!isOpen) return null;
-    const {usuario} = useAuth();
-    const [formData, setFormData] = useState({
-      Monto: 0,
-      TasaInteres: 0,
-      PlazoMeses: 0,
-      Estado: "",
-      FechaFin: "",
-      CuotaMensual: 0
-    });
-    const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const { usuario } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  if (!isOpen) return null;
+
+  const handleSolicitarPrestamo = async () => {
+    if (!usuario) return;
+
+    setIsSubmitting(true);
     try {
+      // Datos del préstamo a crear
       const prestamoData = {
-        ...formData,
-        IdUsuario: usuario.IdUsuario, // 🔸 Vinculamos con el usuario logueado
+        IdUsuario: usuario.IdUsuario,
+        Monto: montoSolicitado,
+        TasaInteres: 10.5, // fija por ahora
+        PlazoMeses: plazo,
+        Estado: "pendiente",
+        CuotaMensual: cuotaEstimada,
+        FechaFin: new Date(new Date().setMonth(new Date().getMonth() + plazo)),
+        Pagado:0
       };
 
-      await cuentasService.prestamoService(prestamoData);
+      // Crear el préstamo
+      await prestamoService.crearPrestamo(prestamoData);
 
-      // 🔹 Actualizar la lista de cuentas en el componente padre
-      const cuentasActualizadas = await prestamoService.getPrestamosDelUsuario(usuario.IdUsuario);
-      setCuentas(cuentasActualizadas);
+      // 🔹 Notificar al padre que se creó un préstamo
+      onPrestamoCreado();
 
-      // 🔹 Cerrar modal y resetear formulario
-      setIsModalOpen(false);
-      setFormData({
-        IdTipoCuenta: 1,
-        IdSucursal: 1,
-        CBU: "",
-        Alias: "",
-        Saldo: "",
-        Activa: true,
-      });
+      // Cerrar modal
+      onClose();
     } catch (error) {
-      console.error("Error al crear la cuenta:", error);
-      alert(error.message || "Error al crear la cuenta");
+      console.error("Error al crear el préstamo:", error);
+      alert(error.message || "No se pudo crear el préstamo");
     } finally {
       setIsSubmitting(false);
     }
@@ -64,37 +57,29 @@ export const ModalPrestamo = ({
           <h3 className="text-xl font-bold text-gray-900">
             Solicitar Préstamo
           </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
             ✕
           </button>
         </div>
 
         <div className="space-y-4">
+          {/* Monto */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Monto a solicitar
             </label>
             <input
-              type="range"
+              type="number"
               min="10000"
               max="500000"
-              step="10000"
+              step="1000"
               value={montoSolicitado}
               onChange={(e) => setMontoSolicitado(Number(e.target.value))}
-              className="w-full"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
             />
-            <div className="flex justify-between text-sm text-gray-600 mt-1">
-              <span>$10.000</span>
-              <span className="text-xl font-bold text-blue-600">
-                ${montoSolicitado.toLocaleString()}
-              </span>
-              <span>$500.000</span>
-            </div>
           </div>
 
+          {/* Plazo */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Plazo en meses
@@ -102,30 +87,27 @@ export const ModalPrestamo = ({
             <select
               value={plazo}
               onChange={(e) => setPlazo(Number(e.target.value))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
             >
-              <option value={6}>6 meses</option>
-              <option value={12}>12 meses</option>
-              <option value={24}>24 meses</option>
-              <option value={36}>36 meses</option>
-              <option value={48}>48 meses</option>
+              {[6, 12, 24, 36, 48, 60].map((mes) => (
+                <option key={mes} value={mes}>
+                  {mes} meses
+                </option>
+              ))}
             </select>
           </div>
 
+          {/* Cuota estimada */}
           <div className="bg-blue-50 rounded-lg p-4 space-y-2">
             <div className="flex justify-between">
-              <span className="text-sm text-gray-600">
-                Cuota mensual estimada
-              </span>
+              <span className="text-sm text-gray-600">Cuota mensual estimada</span>
               <span className="font-bold text-gray-900">
-                ${parseFloat(cuotaEstimada).toLocaleString()}
+                ${cuotaEstimada.toLocaleString()}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Tasa de interés</span>
-              <span className="font-semibold text-gray-900">
-                10.5% anual
-              </span>
+              <span className="font-semibold text-gray-900">10.5% anual</span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Total a pagar</span>
@@ -135,11 +117,12 @@ export const ModalPrestamo = ({
             </div>
           </div>
 
-          <button 
-            onClick={onSolicitarPrestamo}
-            className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          <button
+            onClick={handleSolicitarPrestamo}
+            disabled={isSubmitting}
+            className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
           >
-            Solicitar préstamo
+            {isSubmitting ? "Solicitando..." : "Solicitar préstamo"}
           </button>
         </div>
       </div>

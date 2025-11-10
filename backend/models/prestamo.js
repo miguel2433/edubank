@@ -7,6 +7,11 @@ export const prestamoSchema = z.object({
 			invalid_type_error: "El ID del préstamo debe ser un número",
 		})
 		.optional(), // auto-incremental en la DB
+	Pagado: z
+		.number({
+			invalid_type_error: "El saldo debe ser un número",
+		})
+		.default(0.0),
 	Monto: z.coerce
       .number({
         invalid_type_error: "El monto debe ser un número",

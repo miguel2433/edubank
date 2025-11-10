@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { CheckCircle, Plus } from "lucide-react";
 import { ModalPrestamo } from "../components/ModalPrestamo";
 import { useAuth } from "../context/AuthContext";
@@ -9,32 +9,9 @@ export const Prestamos = () => {
   const [montoSolicitado, setMontoSolicitado] = useState(50000);
   const [plazo, setPlazo] = useState(12);
   const [prestamos, setPrestamos] = useState([]);
-  const {usuario,cargando} = useAuth();
+  const { usuario, cargando } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [error,setError] = useState("")
-
-  useEffect(() => {
-    const fetchPrestamos = async () => {
-      if (!usuario) return; // 🔹 Esperar al usuario
-      console.log(usuario);
-      try {
-        const data = await prestamoService.getPrestamosDelUsuario(
-          usuario.IdUsuario
-        );
-
-        setPrestamos(data);
-      } catch (err) {
-        console.error(err);
-        setError("No se pudieron cargar las cuentas");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPrestamos();
-  }, [usuario]);
-
-
+  const [error, setError] = useState("");
 
   const calcularCuota = (monto, tasa, meses) => {
     const tasaMensual = tasa / 100 / 12;
@@ -46,15 +23,33 @@ export const Prestamos = () => {
 
   const cuotaEstimada = calcularCuota(montoSolicitado, 10.5, plazo);
 
-  const handleSolicitarPrestamo = () => {
-    console.log('Solicitando préstamo:', { montoSolicitado, plazo, cuotaEstimada });
-    setModalAbierto(false);
+  const fetchPrestamos = async () => {
+    if (!usuario) return;
+
+    setLoading(true);
+    setError("");
+    try {
+      const data = await prestamoService.getPrestamosDelUsuario(usuario.IdUsuario);
+      setPrestamos(data || []);
+    } catch (err) {
+      console.error(err);
+      setError("No se pudieron cargar los préstamos");
+    } finally {
+      setLoading(false);
+    }
   };
-  if (cargando || loading)
-    return <p className="text-gray-600">Cargando cuentas...</p>;
+
+  useEffect(() => {
+    fetchPrestamos();
+  }, [usuario]);
+
+  const handlePrestamoCreado = () => {
+    fetchPrestamos();
+  };
+
+  if (cargando || loading) return <p className="text-gray-600">Cargando préstamos...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
-  if (!usuario)
-    return <p className="text-gray-600">Iniciá sesión para ver tus cuentas.</p>;
+  if (!usuario) return <p className="text-gray-600">Iniciá sesión para ver tus préstamos.</p>;
 
   return (
     <div className="space-y-6">
@@ -69,119 +64,65 @@ export const Prestamos = () => {
         </button>
       </div>
 
-      {/* Préstamos activos */}
       <div className="space-y-4">
-        {prestamos.map((prestamo) => (
-          <div
-            key={prestamo.id}
-            className="bg-white rounded-xl p-6 border border-gray-200"
-          >
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
-              <div>
-                <h3 className="text-xl font-bold text-gray-900">
-                  Préstamo Personal
-                </h3>
-                <p className="text-sm text-gray-500">
-                  Solicitado el {prestamo.FechaInicio.slice(0,10)}
-                </p>
-              </div>
-              <span className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium w-fit">
-                <CheckCircle className="w-4 h-4" />
-                {prestamo.Estado}
-              </span>
-            </div>
+        {prestamos.length === 0 && <p className="text-gray-600">No tenés préstamos actualmente.</p>}
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Monto prestado</p>
-                <p className="text-xl font-bold text-gray-900">
-                  ${prestamo.Monto.toLocaleString()}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Tasa de interés</p>
-                <p className="text-xl font-bold text-gray-900">
-                  {prestamo.TasaInteres}%
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Cuota mensual</p>
-                <p className="text-xl font-bold text-gray-900">
-                  ${prestamo.CuotaMensual.toLocaleString()}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Plazo total</p>
-                <p className="text-xl font-bold text-gray-900">
-                  {prestamo.PlazoMeses} meses
-                </p>
-              </div>
-            </div>
+        {prestamos.map((prestamo) => {
+          const cuotasPagadas = prestamo.Pagado || 0;
 
-            {/* Progreso */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Progreso de pago</span>
-                <span className="font-medium text-gray-900">
-                  0 de {prestamo.plazoMeses} cuotas
-                  pagadas
+
+          const progreso = (prestamo.Pagado || 0) / prestamo.PlazoMeses * 100;
+
+
+          return (
+            <div key={prestamo.IdPrestamo} className="bg-white rounded-xl p-6 border border-gray-200">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Préstamo Personal</h3>
+                  <p className="text-sm text-gray-500">
+                    Solicitado el {prestamo.FechaInicio?.slice(0, 10) || "N/A"}
+                  </p>
+                </div>
+                <span className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium w-fit">
+                  <CheckCircle className="w-4 h-4" />
+                  {prestamo.Estado}
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div
-                  className="bg-blue-600 h-3 rounded-full transition-all duration-300"
-                  style={{
-                    width: `${
-                      (10 / prestamo.plazoMeses) * 100
-                    }%`,
-                  }}
-                />
+
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                {[
+                  { label: "Monto prestado", value: `$${prestamo.Monto.toLocaleString()}` },
+                  { label: "Tasa de interés", value: `${prestamo.TasaInteres}%` },
+                  { label: "Cuota mensual", value: `$${prestamo.CuotaMensual.toLocaleString()}` },
+                  { label: "Plazo total", value: `${prestamo.PlazoMeses} meses` },
+                ].map((item) => (
+                  <div key={item.label}>
+                    <p className="text-sm text-gray-600 mb-1">{item.label}</p>
+                    <p className="text-xl font-bold text-gray-900">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Progreso de pago animado */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Progreso de pago</span>
+                  <span className="font-medium text-gray-900">
+                    {cuotasPagadas} de {prestamo.PlazoMeses} cuotas pagadas
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div
+                    className="bg-blue-600 h-3 rounded-full transition-all duration-1000 ease-out"
+                    style={{ width: `${progreso}%` }}
+                  />
+                </div>
               </div>
             </div>
-
-            <div className="mt-6 pt-6 border-t border-gray-200 flex gap-3">
-              <button className="flex-1 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium">
-                Ver cronograma
-              </button>
-              <button className="flex-1 px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors font-medium">
-                Pagar cuota
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Ofertas de préstamos */}
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <h3 className="text-lg font-semibold mb-4">Ofertas disponibles</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            { nombre: "Personal", tasa: 10.5, plazoMax: 60 },
-            { nombre: "Hipotecario", tasa: 8.5, plazoMax: 360 },
-            { nombre: "Prendario", tasa: 12.0, plazoMax: 72 },
-          ].map((oferta, index) => (
-            <div
-              key={index}
-              className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow"
-            >
-              <h4 className="font-semibold text-gray-900 mb-2">
-                {oferta.nombre}
-              </h4>
-              <p className="text-2xl font-bold text-blue-600 mb-1">
-                {oferta.tasa}%
-              </p>
-              <p className="text-sm text-gray-600 mb-4">
-                Hasta {oferta.plazoMax} meses
-              </p>
-              <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-                Simular
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Modal de solicitud */}
       <ModalPrestamo
         isOpen={modalAbierto}
         onClose={() => setModalAbierto(false)}
@@ -190,7 +131,7 @@ export const Prestamos = () => {
         plazo={plazo}
         setPlazo={setPlazo}
         cuotaEstimada={cuotaEstimada}
-        onSolicitarPrestamo={handleSolicitarPrestamo}
+        onPrestamoCreado={handlePrestamoCreado}
       />
     </div>
   );
