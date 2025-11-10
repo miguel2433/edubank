@@ -32,9 +32,7 @@ export const MisCuentas = () => {
   if (error) return <p className="text-red-500">{error}</p>;
   if (!usuario) return <p className="text-gray-600">Iniciá sesión para ver tus cuentas.</p>;
 
-  if (cuentas.length === 0) {
-    return <p className="text-gray-600">No tenés cuentas registradas.</p>;
-  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -44,7 +42,9 @@ export const MisCuentas = () => {
           Nueva Cuenta
         </button>
       </div>
-
+      {  cuentas.length === 0 ? 
+      <p className="text-gray-600">No tenés cuentas registradas.</p>
+      :      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {cuentas.map((cuenta) => (
           <div
@@ -89,7 +89,8 @@ export const MisCuentas = () => {
             </div>
           </div>
         ))}
-      </div>
+      </div>}
     </div>
+    
   );
 };

@@ -81,7 +81,7 @@ export const crearCuentaSchema = z.object({
 			invalid_type_error: "Activa debe ser true o false",
 		})
 		.default(true),
-	FechaApertura: z.union([z.string().datetime(), z.date()])
+	FechaApertura: z.union([z.string().datetime(), z.date()]).optional()
 });
 
 export const editarCuentaSchema = crearCuentaSchema.partial();
