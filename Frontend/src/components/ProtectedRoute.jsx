@@ -2,6 +2,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { authService } from "../services/authService.js";
+import { Layout } from "./Layout.jsx";
 
 export default function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true);
@@ -23,5 +24,5 @@ export default function ProtectedRoute({ children }) {
 
   if (loading) return <p className="text-center">Verificando sesión...</p>;
 
-  return auth ? children : <Navigate to="/login" replace />;
+  return auth ? <Layout>{children}</Layout> : <Navigate to="/login" replace />;
 }
