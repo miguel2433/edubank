@@ -52,7 +52,7 @@ export const CrearTransaccionSchema = z.object({
   Monto: z.coerce
     .number({ invalid_type_error: "El monto debe ser un número" })
     .positive({ message: "El monto debe ser mayor a 0" }),
-  Fecha: z.union([z.string().datetime(), z.date()]).optiona(),
+  Fecha: z.union([z.string().datetime(), z.date()]).optional(),
   Tipo: z.enum(["deposito", "retiro", "transferencia", "pago"], {
     errorMap: () => ({ message: "Tipo de transacción inválido" }),
   }),
