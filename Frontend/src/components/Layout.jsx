@@ -7,22 +7,17 @@ import {
   ArrowUpDown,
   DollarSign,
   User,
-  Bell,
   LogOut,
-  ChevronDown,
-  Plus,
-  TrendingUp,
-  TrendingDown,
-  Eye,
-  EyeOff,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-// ============================================
-// COMPONENTE: Layout Principal
-// ============================================
+import { useAuth } from "../context/AuthContext";
+import { authService } from "../services/authService";
+import { useNavigate } from "react-router-dom";
+
 export const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [notificaciones, setNotificaciones] = useState(3);
+  const { setUsuario } = useAuth();
+  const navigate = useNavigate();
 
   const menuItems = [
     { icon: Home, label: "Dashboard", path: "/dashboard" },
@@ -32,6 +27,12 @@ export const Layout = ({ children }) => {
     { icon: DollarSign, label: "Préstamos", path: "/prestamos" },
     { icon: User, label: "Perfil", path: "/perfil" },
   ];
+
+  const cerrarSesion = () => {
+    authService.logout();
+    setUsuario(null);
+    navigate("/login");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -48,22 +49,13 @@ export const Layout = ({ children }) => {
             <h1 className="text-xl font-bold text-blue-600">EduBank</h1>
           </div>
 
-          <div className="flex items-center gap-4">
-            <button className="relative">
-              <Bell className="w-6 h-6 text-gray-600" />
-              {notificaciones > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                  {notificaciones}
-                </span>
-              )}
-            </button>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
-                JG
-              </div>
-              <ChevronDown className="w-4 h-4 text-gray-600" />
-            </div>
-          </div>
+          {/* cerra secion */}
+          <button
+            className="text-gray-600 hover:text-gray-800 cursor-pointer mr-5"
+            onClick={() => cerrarSesion()}
+          >
+            <LogOut className="w-6 h-6" />
+          </button>
         </div>
       </header>
 
