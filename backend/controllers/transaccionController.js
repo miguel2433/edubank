@@ -96,7 +96,7 @@ export const transaccionController = {
             res.json(transacciones);
         }catch(error){
             console.error("Error en transaccionController.getTransaccionesUsuario:", error);
-            res.status(500).json({ message: "Error al traer transacciones del usuario" });
+            res.status(404).json({ message: "No se encontraron transacciones del usuario" });
         }
     }
 };
