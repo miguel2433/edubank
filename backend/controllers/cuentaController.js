@@ -24,7 +24,7 @@ export const cuentaController = {
 			res.json(cuenta);
 		} catch (error) {
 			console.error("Error en cuentaController.getid:", error);
-			res.status(500).json({ message: "Error al obtener cuenta" });
+			res.status(404).json({ message: "Error al obtener cuenta" });
 		}
 	},
 	async crear(req,res){
@@ -73,7 +73,7 @@ export const cuentaController = {
 		}
 		catch(error){
 			console.error("Erroe en cuentaController.getCuentasDelUsuario:", error)
-			res.status(500).json({
+			res.status(404).json({
 				message:"Error al conseguir cuentas del usuario"
 			})
 		}
