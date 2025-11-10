@@ -8,6 +8,10 @@ export const tarjetaService = {
     });
 
     if (!res.ok) {
+      // Si el error es porque no hay tarjetas, devolvemos un array vacío
+      if (res.status === 400) {
+        return [];
+      }
       const error = await res.json();
       throw new Error(error.message || "Error al obtener tarjetas del usuario");
     }

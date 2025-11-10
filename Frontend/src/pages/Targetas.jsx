@@ -12,11 +12,14 @@ export const Tarjetas = () => {
   const [error, setError] = useState("");
   const [isOpenCrear, setIsOpenCrear] = useState(false);
 
+  console.log(tarjetas);
   const fetchTarjetas = async () => {
     if (!usuario) return;
     try {
       setLoading(true);
-      const data = await tarjetaService.getTarjetasDelUsuario(usuario.IdUsuario);
+      const data = await tarjetaService.getTarjetasDelUsuario(
+        usuario.IdUsuario
+      );
       setTarjetas(data);
     } catch (err) {
       console.error(err);
@@ -50,7 +53,10 @@ export const Tarjetas = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900">Mis Tarjetas</h2>
-          <button onClick={() => setIsOpenCrear(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+          <button
+            onClick={() => setIsOpenCrear(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+          >
             <Plus className="w-5 h-5" />
             Solicitar Tarjeta
           </button>
@@ -116,7 +122,9 @@ export const Tarjetas = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-xs opacity-70 mb-1">Vencimiento</p>
-                      <p className="font-semibold">{tarjeta.FechaVencimiento.slice(0,10)}</p>
+                      <p className="font-semibold">
+                        {tarjeta.FechaVencimiento.slice(0, 10)}
+                      </p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs opacity-70 mb-1">CVV</p>
@@ -182,41 +190,47 @@ export const Tarjetas = () => {
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <h3 className="text-lg font-semibold mb-4">Últimas compras</h3>
           <div className="space-y-3">
-            {[
-              {
-                comercio: "Supermercado Día",
-                monto: 15000,
-                fecha: "2025-01-15",
-                categoria: "Alimentación",
-              },
-              {
-                comercio: "Netflix",
-                monto: 2500,
-                fecha: "2025-01-14",
-                categoria: "Entretenimiento",
-              },
-              {
-                comercio: "YPF",
-                monto: 8000,
-                fecha: "2025-01-13",
-                categoria: "Combustible",
-              },
-            ].map((compra, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors"
-              >
-                <div>
-                  <p className="font-medium text-gray-900">{compra.comercio}</p>
-                  <p className="text-sm text-gray-500">
-                    {compra.categoria} • {compra.fecha}
+            {tarjetas.length === 0 ? (
+              <p className="text-gray-600">No tenés tarjetas registradas.</p>
+            ) : (
+              [
+                {
+                  comercio: "Supermercado Día",
+                  monto: 15000,
+                  fecha: "2025-01-15",
+                  categoria: "Alimentación",
+                },
+                {
+                  comercio: "Netflix",
+                  monto: 2500,
+                  fecha: "2025-01-14",
+                  categoria: "Entretenimiento",
+                },
+                {
+                  comercio: "YPF",
+                  monto: 8000,
+                  fecha: "2025-01-13",
+                  categoria: "Combustible",
+                },
+              ].map((compra, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  <div>
+                    <p className="font-medium text-gray-900">
+                      {compra.comercio}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {compra.categoria} • {compra.fecha}
+                    </p>
+                  </div>
+                  <p className="font-bold text-gray-900">
+                    -${compra.monto.toLocaleString()}
                   </p>
                 </div>
-                <p className="font-bold text-gray-900">
-                  -${compra.monto.toLocaleString()}
-                </p>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -229,4 +243,3 @@ export const Tarjetas = () => {
     </>
   );
 };
-
