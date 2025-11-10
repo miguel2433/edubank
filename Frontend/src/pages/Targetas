@@ -1,0 +1,407 @@
+import React, { useState } from 'react';
+import { CreditCard, Lock, Calendar, DollarSign, CheckCircle, Clock, Plus, Eye, EyeOff, Copy } from 'lucide-react';
+
+// ============================================
+// VISTA: Tarjetas
+// ============================================
+export const Tarjetas = () => {
+  const [mostrarNumero, setMostrarNumero] = useState({});
+  
+  const tarjetas = [
+    {
+      id: 1,
+      numero: '4555 5555 4444 3333',
+      tipo: 'credito',
+      vencimiento: '12/28',
+      cvv: '123',
+      limiteCredito: 100000,
+      saldoDisponible: 85000,
+      marca: 'VISA',
+      activa: true
+    },
+    {
+      id: 2,
+      numero: '4111 1111 2222 3333',
+      tipo: 'debito',
+      vencimiento: '05/27',
+      cvv: '456',
+      limiteCredito: 0,
+      saldoDisponible: 0,
+      marca: 'MASTERCARD',
+      activa: true
+    }
+  ];
+
+  const toggleMostrarNumero = (id) => {
+    setMostrarNumero(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const copiarNumero = (numero) => {
+    navigator.clipboard.writeText(numero.replace(/\s/g, ''));
+    alert('Número de tarjeta copiado');
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-900">Mis Tarjetas</h2>
+        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+          <Plus className="w-5 h-5" />
+          Solicitar Tarjeta
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {tarjetas.map((tarjeta) => (
+          <div key={tarjeta.id} className="relative">
+            {/* Tarjeta visual */}
+            <div className={`rounded-2xl p-6 text-white relative overflow-hidden ${
+              tarjeta.tipo === 'credito' 
+                ? 'bg-gradient-to-br from-purple-600 to-purple-900' 
+                : 'bg-gradient-to-br from-gray-700 to-gray-900'
+            }`}>
+              {/* Decoración de fondo */}
+              <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full -mr-20 -mt-20" />
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-5 rounded-full -ml-16 -mb-16" />
+              
+              <div className="relative z-10">
+                {/* Header */}
+                <div className="flex justify-between items-start mb-8">
+                  <div>
+                    <p className="text-sm opacity-80">
+                      {tarjeta.tipo === 'credito' ? 'Tarjeta de Crédito' : 'Tarjeta de Débito'}
+                    </p>
+                    <p className="text-2xl font-bold mt-1">{tarjeta.marca}</p>
+                  </div>
+                  <div className="w-12 h-8 bg-white bg-opacity-20 rounded backdrop-blur-sm flex items-center justify-center">
+                    <div className="w-8 h-6 bg-gradient-to-r from-yellow-400 to-yellow-200 rounded" />
+                  </div>
+                </div>
+
+                {/* Número de tarjeta */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between">
+                    <p className="font-mono text-xl tracking-wider">
+                      {mostrarNumero[tarjeta.id] ? tarjeta.numero : '•••• •••• •••• ' + tarjeta.numero.slice(-4)}
+                    </p>
+                    <button 
+                      onClick={() => toggleMostrarNumero(tarjeta.id)}
+                      className="ml-2 p-1 hover:bg-white hover:bg-opacity-20 rounded transition-colors"
+                    >
+                      {mostrarNumero[tarjeta.id] ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Información adicional */}
+                <div className="flex justify-between items-end">
+                  <div>
+                    <p className="text-xs opacity-70 mb-1">Titular</p>
+                    <p className="font-semibold">JUAN PÉREZ</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs opacity-70 mb-1">Vencimiento</p>
+                    <p className="font-semibold">{tarjeta.vencimiento}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs opacity-70 mb-1">CVV</p>
+                    <p className="font-semibold">
+                      {mostrarNumero[tarjeta.id] ? tarjeta.cvv : '•••'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Información y acciones */}
+            <div className="mt-4 bg-white rounded-xl p-4 border border-gray-200 space-y-3">
+              {tarjeta.tipo === 'credito' && (
+                <>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Límite de crédito</span>
+                    <span className="font-semibold">${tarjeta.limiteCredito.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Disponible</span>
+                    <span className="font-semibold text-green-600">${tarjeta.saldoDisponible.toLocaleString()}</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-green-500 h-2 rounded-full" 
+                      style={{ width: `${(tarjeta.saldoDisponible / tarjeta.limiteCredito) * 100}%` }}
+                    />
+                  </div>
+                </>
+              )}
+              
+              <div className="flex gap-2 pt-2">
+                <button 
+                  onClick={() => copiarNumero(tarjeta.numero)}
+                  className="flex-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                >
+                  <Copy className="w-4 h-4" />
+                  Copiar
+                </button>
+                <button className="flex-1 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                  <Lock className="w-4 h-4" />
+                  Bloquear
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Transacciones con tarjeta */}
+      <div className="bg-white rounded-xl p-6 border border-gray-200">
+        <h3 className="text-lg font-semibold mb-4">Últimas compras</h3>
+        <div className="space-y-3">
+          {[
+            { comercio: 'Supermercado Día', monto: 15000, fecha: '2025-01-15', categoria: 'Alimentación' },
+            { comercio: 'Netflix', monto: 2500, fecha: '2025-01-14', categoria: 'Entretenimiento' },
+            { comercio: 'YPF', monto: 8000, fecha: '2025-01-13', categoria: 'Combustible' },
+          ].map((compra, index) => (
+            <div key={index} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
+              <div>
+                <p className="font-medium text-gray-900">{compra.comercio}</p>
+                <p className="text-sm text-gray-500">{compra.categoria} • {compra.fecha}</p>
+              </div>
+              <p className="font-bold text-gray-900">-${compra.monto.toLocaleString()}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============================================
+// VISTA: Préstamos
+// ============================================
+export const Prestamos = () => {
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [montoSolicitado, setMontoSolicitado] = useState(50000);
+  const [plazo, setPlazo] = useState(12);
+
+  const prestamos = [
+    {
+      id: 1,
+      monto: 200000,
+      tasaInteres: 10.5,
+      plazoMeses: 24,
+      cuotaMensual: 9458,
+      fechaInicio: '2024-12-01',
+      estado: 'aprobado',
+      cuotasPagadas: 2,
+      cuotasPendientes: 22
+    }
+  ];
+
+  const calcularCuota = (monto, tasa, meses) => {
+    const tasaMensual = tasa / 100 / 12;
+    const cuota = monto * (tasaMensual * Math.pow(1 + tasaMensual, meses)) / 
+                  (Math.pow(1 + tasaMensual, meses) - 1);
+    return cuota.toFixed(2);
+  };
+
+  const cuotaEstimada = calcularCuota(montoSolicitado, 10.5, plazo);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-900">Préstamos</h2>
+        <button 
+          onClick={() => setModalAbierto(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+        >
+          <Plus className="w-5 h-5" />
+          Solicitar Préstamo
+        </button>
+      </div>
+
+      {/* Préstamos activos */}
+      <div className="space-y-4">
+        {prestamos.map((prestamo) => (
+          <div key={prestamo.id} className="bg-white rounded-xl p-6 border border-gray-200">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Préstamo Personal</h3>
+                <p className="text-sm text-gray-500">Solicitado el {prestamo.fechaInicio}</p>
+              </div>
+              <span className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium w-fit">
+                <CheckCircle className="w-4 h-4" />
+                {prestamo.estado}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Monto prestado</p>
+                <p className="text-xl font-bold text-gray-900">${prestamo.monto.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Tasa de interés</p>
+                <p className="text-xl font-bold text-gray-900">{prestamo.tasaInteres}%</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Cuota mensual</p>
+                <p className="text-xl font-bold text-gray-900">${prestamo.cuotaMensual.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Plazo total</p>
+                <p className="text-xl font-bold text-gray-900">{prestamo.plazoMeses} meses</p>
+              </div>
+            </div>
+
+            {/* Progreso */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Progreso de pago</span>
+                <span className="font-medium text-gray-900">
+                  {prestamo.cuotasPagadas} de {prestamo.plazoMeses} cuotas pagadas
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className="bg-blue-600 h-3 rounded-full transition-all duration-300" 
+                  style={{ width: `${(prestamo.cuotasPagadas / prestamo.plazoMeses) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 pt-6 border-t border-gray-200 flex gap-3">
+              <button className="flex-1 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium">
+                Ver cronograma
+              </button>
+              <button className="flex-1 px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors font-medium">
+                Pagar cuota
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Ofertas de préstamos */}
+      <div className="bg-white rounded-xl p-6 border border-gray-200">
+        <h3 className="text-lg font-semibold mb-4">Ofertas disponibles</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            { nombre: 'Personal', tasa: 10.5, plazoMax: 60 },
+            { nombre: 'Hipotecario', tasa: 8.5, plazoMax: 360 },
+            { nombre: 'Prendario', tasa: 12.0, plazoMax: 72 },
+          ].map((oferta, index) => (
+            <div key={index} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+              <h4 className="font-semibold text-gray-900 mb-2">{oferta.nombre}</h4>
+              <p className="text-2xl font-bold text-blue-600 mb-1">{oferta.tasa}%</p>
+              <p className="text-sm text-gray-600 mb-4">Hasta {oferta.plazoMax} meses</p>
+              <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                Simular
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Modal de solicitud */}
+      {modalAbierto && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-gray-900">Solicitar Préstamo</h3>
+              <button 
+                onClick={() => setModalAbierto(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Monto a solicitar
+                </label>
+                <input
+                  type="range"
+                  min="10000"
+                  max="500000"
+                  step="10000"
+                  value={montoSolicitado}
+                  onChange={(e) => setMontoSolicitado(Number(e.target.value))}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-sm text-gray-600 mt-1">
+                  <span>$10.000</span>
+                  <span className="text-xl font-bold text-blue-600">
+                    ${montoSolicitado.toLocaleString()}
+                  </span>
+                  <span>$500.000</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Plazo en meses
+                </label>
+                <select
+                  value={plazo}
+                  onChange={(e) => setPlazo(Number(e.target.value))}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value={6}>6 meses</option>
+                  <option value={12}>12 meses</option>
+                  <option value={24}>24 meses</option>
+                  <option value={36}>36 meses</option>
+                  <option value={48}>48 meses</option>
+                </select>
+              </div>
+
+              <div className="bg-blue-50 rounded-lg p-4 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Cuota mensual estimada</span>
+                  <span className="font-bold text-gray-900">${parseFloat(cuotaEstimada).toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Tasa de interés</span>
+                  <span className="font-semibold text-gray-900">10.5% anual</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Total a pagar</span>
+                  <span className="font-bold text-blue-600">
+                    ${(cuotaEstimada * plazo).toLocaleString()}
+                  </span>
+                </div>
+              </div>
+
+              <button className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                Solicitar préstamo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Componente de demostración
+export default function App() {
+  const [vista, setVista] = useState('tarjetas');
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-gray-900 text-white p-4 flex gap-4 justify-center">
+        <button onClick={() => setVista('tarjetas')} className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700">
+          Tarjetas
+        </button>
+        <button onClick={() => setVista('prestamos')} className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700">
+          Préstamos
+        </button>
+      </div>
+      
+      <div className="p-6 max-w-7xl mx-auto">
+        {vista === 'tarjetas' ? <Tarjetas /> : <Prestamos />}
+      </div>
+    </div>
+  );
+}
