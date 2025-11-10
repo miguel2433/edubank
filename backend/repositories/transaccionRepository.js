@@ -62,11 +62,23 @@ export const transaccionRepository = {
 
 
     async crear(datos) {
+      if(datos.Tipo === "transferencia"){
+        
+            const { aliasDestino } = datos;
+            
+            const cuentaDestino = await db("Cuenta").where({ Alias: aliasDestino }).select("*").first();
+
+            if (!cuentaDestino) {
+                throw new Error("No se encontró la cuenta destino");
+            }
+            datos.IdCuentaDestino = cuentaDestino.IdCuenta
+        }
+        
         const nuevaTransaccion = CrearTransaccionSchema.parse(datos);
 
 
         const transaccionParaBD = {
-            ...nuevaTransaccion
+            ...nuevaTransaccion,
         };
 
         const [id] = await db("Transaccion").insert(transaccionParaBD);
@@ -74,6 +86,8 @@ export const transaccionRepository = {
         if (nuevaTransaccion.Estado === "completado" || nuevaTransaccion.Estado === "cancelado") {
             await this.actualizarSaldos(nuevaTransaccion);
         }
+
+        
 
         return await this.getId(id);
     },

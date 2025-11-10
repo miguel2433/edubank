@@ -26,8 +26,11 @@ export const transaccionController = {
     },
 
     async crear(req, res) {
+        
         try {
             const nuevaTransaccion = await transaccionRepository.crear(req.body);
+
+            
             res.status(201).json(nuevaTransaccion);
         } catch (error) {
             console.error("Error en transaccionController.crear:", error);
