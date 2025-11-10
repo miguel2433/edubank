@@ -11,19 +11,18 @@ import { transaccionService } from "../services/transacciones";
 import { useAuth } from "../context/AuthContext";
 
 export const Transacciones = () => {
-  const [filtro, setFiltro] = useState("todas");
+  const [filtroTipo, setFiltroTipo] = useState("todos");
   const [transacciones, setTransacciones] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const { usuario } = useAuth();
-  console.log("usuario identificado", usuario);
 
   useEffect(() => {
     const cargarTransacciones = async () => {
       try {
         setCargando(true);
         const data = await transaccionService.conseguirTransaccionesDelUsuario(
-          usuario.IdUsuario
+          1
         );
         console.log("transacciones", data);
         setTransacciones(data);
@@ -43,13 +42,8 @@ export const Transacciones = () => {
   }, [usuario?.IdUsuario]);
 
   const transaccionesFiltradas = transacciones.filter((tx) => {
-    if (filtro === "todas") return true;
-    if (filtro === "recibidas")
-      return tx.Tipo === "transferencia" && tx.IdCuentaDestino === usuario?.IdUsuario;
-    if (filtro === "enviadas")
-      return tx.Tipo === "transferencia" && tx.IdCuentaOrigen === usuario?.IdUsuario;
-    if (filtro === "pagos") return tx.Tipo === "pago";
-    return true;
+    // Filtro por tipo de transacción
+    return filtroTipo === "todos" || tx.Tipo === filtroTipo;
   });
 
   const formatearFecha = (fechaISO) => {
@@ -84,12 +78,14 @@ export const Transacciones = () => {
   };
 
   const obtenerClaseMonto = (transaccion) => {
+    if (transaccion.Estado === 'cancelado') return 'text-gray-400';
     return transaccion.IdCuentaOrigen === usuario?.IdUsuario
       ? "text-red-600"
       : "text-green-600";
   };
 
   const obtenerSimboloMonto = (transaccion) => {
+    if (transaccion.Estado === 'cancelado') return '';
     return transaccion.IdCuentaOrigen === usuario?.IdUsuario ? "-" : "+";
   };
 
@@ -103,20 +99,31 @@ export const Transacciones = () => {
         </button>
       </div>
 
-      {/* Filtros */}
+      {/* Filtro por tipo de transacción */}
       <div className="bg-white rounded-xl p-4 border border-gray-200">
+        <h3 className="text-sm font-medium text-gray-500 mb-2">Tipo de transacción</h3>
         <div className="flex flex-wrap gap-2">
-          {["todas", "recibidas", "enviadas", "pagos"].map((f) => (
+          <button
+            onClick={() => setFiltroTipo("todos")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              filtroTipo === "todos"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Todos
+          </button>
+          {["deposito", "retiro", "transferencia", "pago"].map((tipo) => (
             <button
-              key={f}
-              onClick={() => setFiltro(f)}
+              key={tipo}
+              onClick={() => setFiltroTipo(tipo)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                filtro === f
+                filtroTipo === tipo
                   ? "bg-blue-600 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
-              {f.charAt(0).toUpperCase() + f.slice(1)}
+              {tipo.charAt(0).toUpperCase() + tipo.slice(1)}
             </button>
           ))}
         </div>
@@ -160,7 +167,11 @@ export const Transacciones = () => {
               {transaccionesFiltradas.map((tx) => (
                 <div
                   key={tx.IdTransaccion}
-                  className="p-4 hover:bg-gray-50 transition-colors"
+                  className={`p-4 transition-colors ${
+                    tx.Estado === 'cancelado' 
+                      ? 'bg-gray-50 opacity-70' 
+                      : 'hover:bg-gray-50'
+                  }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -174,10 +185,14 @@ export const Transacciones = () => {
                         {obtenerIcono(tx)}
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900">
+                        <p className={`font-semibold ${
+                          tx.Estado === 'cancelado' ? 'text-gray-500' : 'text-gray-900'
+                        }`}>
                           {obtenerTipoTransaccion(tx)}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className={`text-sm ${
+                          tx.Estado === 'cancelado' ? 'text-gray-400' : 'text-gray-500'
+                        }`}>
                           {tx.Descripcion}
                         </p>
                         <p className="text-xs text-gray-400 mt-1">
@@ -201,6 +216,8 @@ export const Transacciones = () => {
                             ? "bg-green-100 text-green-700"
                             : tx.Estado === "pendiente"
                             ? "bg-yellow-100 text-yellow-700"
+                            : tx.Estado === "cancelado"
+                            ? "bg-gray-200 text-gray-600 line-through"
                             : "bg-red-100 text-red-700"
                         }`}
                       >
@@ -214,7 +231,7 @@ export const Transacciones = () => {
           ) : (
             <div className="p-8 text-center text-gray-500">
               No se encontraron transacciones{" "}
-              {filtro !== "todas" ? `con el filtro "${filtro}"` : ""}
+              {/* {filtro !== "todas" ? `con el filtro "${filtro}"` : ""} */}
             </div>
           )}
         </div>
