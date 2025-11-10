@@ -114,33 +114,35 @@ export const cuentaRepository = {
 
 		return { ...cuentaAeliminar }; // devuelve objeto plano
 	},
-	async cuentasDelUsuario(id){
-		const cuentas = await db("Cuenta")
-			.join("Sucursal", "Cuenta.IdSucursal", "Sucursal.IdSucursal")
-			.join("Usuario", "Cuenta.IdUsuario", "Usuario.IdUsuario")
-			.join("TipoCuenta", "Cuenta.IdTipoCuenta", "TipoCuenta.IdTipoCuenta")
-		  .where({IdUsuario: id});
-		
-		  if(!cuentas){
-			throw new Error("El id del usuario no existe")
-		  }
-		const showCuentas = await Promise.all(
-			cuentas.map(async(cuenta) =>{
-				const usuario = await usuarioRepository.getId(cuenta.IdUsuario);
-				const sucursal = await sucursalRepository.getId(cuenta.IdSucursal);
-				const tipoCuenta = await tipoCuentaRepository.getId(cuenta.IdTipoCuenta);
+	async cuentasDelUsuario(id) {
+	const cuentas = await db("Cuenta")
+		.join("Sucursal", "Cuenta.IdSucursal", "Sucursal.IdSucursal")
+		.join("Usuario", "Cuenta.IdUsuario", "Usuario.IdUsuario")
+		.join("TipoCuenta", "Cuenta.IdTipoCuenta", "TipoCuenta.IdTipoCuenta")
+		.where("Cuenta.IdUsuario", id); // 👈 acá la corrección
 
-				const cuentaCompleta ={
-					...cuenta,
-					usuario,
-					sucursal,
-					tipoCuenta
-				}
-
-				return cuentaSchema.parse(cuentaCompleta);
-			})
-		)
-		return showCuentas;
-		
+	if (!cuentas || cuentas.length === 0) {
+		throw new Error("El id del usuario no existe o no tiene cuentas");
 	}
+
+	const showCuentas = await Promise.all(
+		cuentas.map(async (cuenta) => {
+		const usuario = await usuarioRepository.getId(cuenta.IdUsuario);
+		const sucursal = await sucursalRepository.getId(cuenta.IdSucursal);
+		const tipoCuenta = await tipoCuentaRepository.getId(cuenta.IdTipoCuenta);
+
+		const cuentaCompleta = {
+			...cuenta,
+			usuario,
+			sucursal,
+			tipoCuenta,
+		};
+
+		return cuentaSchema.parse(cuentaCompleta);
+		})
+	);
+
+	return showCuentas;
+	}
+
 };
