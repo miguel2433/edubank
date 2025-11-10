@@ -66,6 +66,7 @@ export const ModalNuevaCuenta = ({ setIsModalOpen, setCuentas }) => {
         Saldo: parseFloat(formData.Saldo),
         IdTipoCuenta: parseInt(formData.IdTipoCuenta),
         IdSucursal: parseInt(formData.IdSucursal),
+        Activa:true
       };
 
       await cuentasService.crearCuenta(cuentaData);
