@@ -1,8 +1,10 @@
 import React from "react";
 import { useState } from "react";
 import { authService } from "../services/authService.js"; // ajustá la ruta según tu proyecto
-
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 export default function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -23,7 +25,7 @@ export default function Login() {
 
       console.log("✅ Login exitoso:", data);
       // Si tu backend responde con cookie HttpOnly, ya queda guardada automáticamente
-      window.location.href = "/dashboard"; // redirigís a tu página principal
+      navigate("/dashboard"); // redirigís a tu página principal
     } catch (err) {
       console.error("❌ Error al iniciar sesión:", err);
       setError(err.message);
@@ -38,7 +40,9 @@ export default function Login() {
         <h2 className="text-2xl font-bold text-center mb-6">Iniciar Sesión</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
             <input
               type="email"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring focus:ring-blue-200"
@@ -50,7 +54,9 @@ export default function Login() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Contraseña</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Contraseña
+            </label>
             <input
               type="password"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring focus:ring-blue-200"
@@ -70,6 +76,18 @@ export default function Login() {
           >
             {loading ? "Iniciando sesión..." : "Ingresar"}
           </button>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              ¿No tienes una cuenta?{" "}
+              <Link
+                to="/register"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
+                Registrate
+              </Link>
+            </p>
+          </div>
         </form>
       </div>
     </div>

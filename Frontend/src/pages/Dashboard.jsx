@@ -18,8 +18,7 @@ export const Dashboard = () => {
   
     useEffect(() => {
       const fetchCuentas = async () => {
-        if (!usuario) return; //  Esperar al usuario
-        console.log(usuario);
+        if (!usuario) return; 
         try {
           const data = await cuentasService.getCuentasDelUsuario(
             usuario.IdUsuario
@@ -27,8 +26,8 @@ export const Dashboard = () => {
 
           setCuentas(data);
         } catch (err) {
-          console.error(err);
           setError("No se pudieron cargar las cuentas");
+          setCuentas([]);
         } finally {
           setLoading(false);
         }
@@ -39,17 +38,16 @@ export const Dashboard = () => {
 
     useEffect(() => {
       const fetchCuentas = async () => {
-        if (!usuario) return; // Esperar al usuario
-        console.log(usuario);
+        if (!usuario) return; 
+
         try {
           const data = await transaccionService.conseguirTransaccionesDelUsuario(
             usuario.IdUsuario
           );
-
           setTransacciones(data);
         } catch (err) {
-          console.error(err);
           setError("No se pudieron cargar las transacciones");
+          setTransacciones([]);
         } finally {
           setLoading(false);
         }
@@ -61,10 +59,11 @@ export const Dashboard = () => {
 
   if (cargando || loading)
     return <p className="text-gray-600">Cargando cuentas...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  
   if (!usuario)
     return <p className="text-gray-600">Iniciá sesión para ver tus cuentas.</p>;
 
+  console.log("cuentas", cuentas)
   return (
     <div className="space-y-6">
       {/* Bienvenida */}
