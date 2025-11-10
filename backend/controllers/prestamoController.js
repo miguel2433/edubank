@@ -97,5 +97,30 @@ export const prestamoController = {
             }
             return res.status(404).json({ errores });
         }
+    },
+    async pagarPrestamo (req, res)  {
+    try {
+      const { id } = req.params;
+      const {   cuotasPagadas, alias    } = req.body
+
+      if (!id || !cuotasPagadas || !alias) {
+        return res.status(400).json({ error: "Faltan parámetros" });
+      }
+
+      const resultado = await prestamoRepository.pagarPrestamo(
+        id,
+        cuotasPagadas,
+        alias
+      );
+
+      // 🔹 Responder con éxito
+      return res.json({
+        message: "Pago registrado correctamente",
+        ...resultado,
+      });
+    } catch (error) {
+      console.error("Error al pagar el préstamo:", error);
+      return res.status(500).json({ error: error.message || "Error al procesar el pago" });
     }
+  },
 };
