@@ -34,19 +34,48 @@ export const MisCuentas = () => {
     fetchCuentas();
   }, [usuario]);
 
-  if (cargando || loading)
-    return <p className="text-gray-600">Cargando cuentas...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
-  if (!usuario)
-    return <p className="text-gray-600">Iniciá sesión para ver tus cuentas.</p>;
+  if (cargando || loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  };
+  if (error) {
+    return (
+      <div className="bg-red-50 border-l-4 border-red-500 p-4">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="ml-3">
+            <p className="text-sm text-red-700">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!usuario) {
+    return (
+      <div className="bg-blue-50 border-l-4 border-blue-500 p-4">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <svg className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h2a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="ml-3">
+            <p className="text-sm text-blue-700">Iniciá sesión para ver tus cuentas.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -59,9 +88,24 @@ export const MisCuentas = () => {
           Nueva Cuenta
         </button>
       </div>
-      {  cuentas.length === 0 ? 
-      <p className="text-gray-600">No tenés cuentas registradas.</p>
-      :      
+      {cuentas.length === 0 ? (
+        <div className="bg-white shadow rounded-lg p-6 text-center">
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100">
+            <CreditCard className="h-6 w-6 text-blue-600" />
+          </div>
+          <h3 className="mt-2 text-lg font-medium text-gray-900">No tenés cuentas registradas</h3>
+          <p className="mt-1 text-sm text-gray-500">Comenzá creando tu primera cuenta para disfrutar de todos los beneficios.</p>
+          <div className="mt-6">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <Plus className="-ml-1 mr-2 h-5 w-5" />
+              Crear cuenta
+            </button>
+          </div>
+        </div>
+      ) : 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {cuentas.map((cuenta) => (
           <div

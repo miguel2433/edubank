@@ -8,6 +8,10 @@ export const cuentasService = {
     });
 
     if (!res.ok) {
+      // Si el error es porque no hay cuentas, devolvemos un array vacío
+      if (res.status === 404) {
+        return [];
+      }
       const error = await res.json();
       throw new Error(error.message || "Error al obtener cuentas del usuario");
     }
