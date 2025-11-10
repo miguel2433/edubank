@@ -116,6 +116,7 @@ export const cuentaRepository = {
 	},
 	async cuentasDelUsuario(id){
 		const cuentas = await db("Cuenta")
+		  .join("TipoCuenta","Cuenta.IdTipoCuenta","TipoCuenta.IdTipoCuenta")
 		  .where({IdUsuario: id});
 		
 		  if(!cuentas){
