@@ -10,6 +10,7 @@ const ModalCrearTarjeta = ({ open, onClose, onCreated }) => {
     FechaVencimiento: "",
     CVV: "",
     Tipo: "debito",
+    
     LimiteCredito: 0,
     SaldoDisponible: 0,
     Activa: true,
