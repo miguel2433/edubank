@@ -6,6 +6,7 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   Repeat,
+  ArrowUpLeft,
 } from "lucide-react";
 import { transaccionService } from "../services/transacciones";
 import { useAuth } from "../context/AuthContext";
@@ -68,9 +69,7 @@ export const Transacciones = () => {
 
   const obtenerTipoTransaccion = (transaccion) => {
     if (transaccion.Tipo === "transferencia") {
-      return transaccion.IdCuentaOrigen === usuario?.IdUsuario
-        ? "Transferencia enviada"
-        : "Transferencia recibida";
+      return "Transferencia";
     }
     return transaccion.Tipo.charAt(0).toUpperCase() + transaccion.Tipo.slice(1);
   };
@@ -83,7 +82,16 @@ export const Transacciones = () => {
         <ArrowDownLeft className="w-6 h-6 text-green-600" />
       );
     }
-    return <Repeat className="w-6 h-6 text-blue-600" />;
+    if (transaccion.Tipo === "pago") {
+      return <ArrowUpRight className="w-6 h-6 text-red-600" />;
+    }
+    if (transaccion.Tipo === "retiro") {
+      return <ArrowUpRight className="w-6 h-6 text-red-600" />;
+    }
+    if (transaccion.Tipo === "deposito") {
+      return <ArrowDownLeft className="w-6 h-6 text-green-600" />;
+    }
+    
   };
 
   const obtenerClaseMonto = (transaccion) => {
