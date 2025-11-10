@@ -169,15 +169,15 @@ export const Dashboard = () => {
           {transacciones.map((tx) => (
             <div key={tx.IdTransaccion} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition-colors">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.Monto > 0 ? 'bg-green-100' : 'bg-red-100'}`}>
-                  {tx.Monto > 0 ? <TrendingUp className="w-5 h-5 text-green-600" /> : <TrendingDown className="w-5 h-5 text-red-600" />}
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.Tipo === "deposito" ? 'bg-green-100' : 'bg-red-100'}`}>
+                  {tx.Tipo === "deposito" ? <TrendingUp className="w-5 h-5 text-green-600" /> : <TrendingDown className="w-5 h-5 text-red-600" />}
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">{tx.Tipo}</p>
                   <p className="text-sm text-gray-500">{tx.Fecha}</p>
                 </div>
               </div>
-              <p className={`font-bold ${tx.Monto > 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <p className={`font-bold ${tx.Tipo === "deposito" ? 'text-green-600' : 'text-red-600'}`}>
                 {tx.Monto > 0 ? '+' : ''}${Math.abs(tx.Monto).toLocaleString()}
               </p>
             </div>
