@@ -109,5 +109,22 @@ export const tarjetaRepository = {
                 return tarjetaSchema.parse({ ...tarjeta, cuenta });
             })
         );
-    }
+    },
+	async TarjetasDelUsuario(id) {
+	    const cuentas = await db("Cuenta").where({ IdUsuario: id });
+
+          if (!cuentas || cuentas.length === 0) {
+            throw new Error("El usuario no tiene cuentas registradas");
+          }
+
+
+	    const idsCuentas = cuentas.map((c) => c.IdCuenta);
+        
+      const tarjetas = await db("Tarjeta")
+        .whereIn("IdCuenta", idsCuentas)
+
+      return tarjetas;
+
+	}
+
 };

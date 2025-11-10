@@ -84,5 +84,15 @@ export const tarjetaController = {
             console.error("Error en tarjetaController.listarPorCuenta:", error);
             res.status(500).json({ message: "Error al obtener tarjetas de la cuenta" });
         }
+    },
+    async tarjetasDelUsuario(req,res){
+        try{
+            const {id} = req.params;
+            const tarjetas = await tarjetaRepository.TarjetasDelUsuario(id)
+            return res.json(tarjetas)
+        }catch (error) {
+            console.error("Error en tarjetaController.tarjetasDelUsuario:", error);
+            res.status(400).json({ message: "Error al obtener tarjetas de la cuenta" });
+        }
     }
 };
