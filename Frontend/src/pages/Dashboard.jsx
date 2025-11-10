@@ -18,16 +18,17 @@ export const Dashboard = () => {
   
     useEffect(() => {
       const fetchCuentas = async () => {
-        if (!usuario) return; 
+        if (!usuario) return; //  Esperar al usuario
+        console.log(usuario);
         try {
           const data = await cuentasService.getCuentasDelUsuario(
             usuario.IdUsuario
           );
-
+          console.log("data cuentas", data);
           setCuentas(data);
         } catch (err) {
+          console.error(err);
           setError("No se pudieron cargar las cuentas");
-          setCuentas([]);
         } finally {
           setLoading(false);
         }
@@ -38,16 +39,17 @@ export const Dashboard = () => {
 
     useEffect(() => {
       const fetchCuentas = async () => {
-        if (!usuario) return; 
-
+        if (!usuario) return; // Esperar al usuario
+        console.log(usuario);
         try {
           const data = await transaccionService.conseguirTransaccionesDelUsuario(
             usuario.IdUsuario
           );
+          console.log("data transacciones", data);
           setTransacciones(data);
         } catch (err) {
+          console.error(err);
           setError("No se pudieron cargar las transacciones");
-          setTransacciones([]);
         } finally {
           setLoading(false);
         }
@@ -59,11 +61,10 @@ export const Dashboard = () => {
 
   if (cargando || loading)
     return <p className="text-gray-600">Cargando cuentas...</p>;
-  
+  // if (error) return <p className="text-red-500">{error}</p>;
   if (!usuario)
     return <p className="text-gray-600">Iniciá sesión para ver tus cuentas.</p>;
 
-  console.log("cuentas", cuentas)
   return (
     <div className="space-y-6">
       {/* Bienvenida */}
@@ -92,13 +93,13 @@ export const Dashboard = () => {
 
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <h3 className="text-gray-600 text-sm font-medium mb-4">Mis Cuentas</h3>
-          <p className="text-3xl font-bold text-gray-900">{cuentas.length}</p>
+          <p className="text-3xl font-bold text-gray-900">{cuentas.length || 0}</p>
           <p className="text-sm text-gray-500 mt-2">Cuentas activas</p>
         </div>
 
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <h3 className="text-gray-600 text-sm font-medium mb-4">Transacciones</h3>
-          <p className="text-3xl font-bold text-gray-900">{transacciones.length}</p>
+          <p className="text-3xl font-bold text-gray-900">{transacciones.length || 0}</p>
           <p className="text-sm text-gray-500 mt-2">Este mes</p>
         </div>
       </div>
@@ -141,20 +142,27 @@ export const Dashboard = () => {
           <button className="text-blue-600 text-sm font-medium hover:underline">Ver todas</button>
         </div>
         <div className="space-y-3">
-          {cuentas.map((cuenta) => (
-            <div key={cuenta.IdCuenta} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div>
-                <p className="font-semibold text-gray-900">{cuenta.tipoCuenta.Nombre}</p>
-                <p className="text-sm text-gray-500">{cuenta.Alias}</p>
-              </div>
-              <div className="text-right">
-                <p className="font-bold text-gray-900">
-                  {mostrarSaldo ? `$${cuenta.Saldo.toLocaleString()}` : '••••••'}
-                </p>
-                <p className="text-xs text-gray-500">{cuenta.CBU.slice(-4)}</p>
-              </div>
+          {cuentas.length === 0 ? (
+            <div className="p-8 text-center">
+              <p className="text-gray-500 mb-2">No tienes cuentas registradas</p>
+              <p className="text-sm text-gray-400">Crea una cuenta para comenzar</p>
             </div>
-          ))}
+          ) : (
+            cuentas.map((cuenta) => (
+              <div key={cuenta.IdCuenta} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-semibold text-gray-900">{cuenta.tipoCuenta.Nombre}</p>
+                  <p className="text-sm text-gray-500">{cuenta.Alias}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-gray-900">
+                    {mostrarSaldo ? `$${cuenta.Saldo.toLocaleString()}` : '••••••'}
+                  </p>
+                  <p className="text-xs text-gray-500">{cuenta.CBU.slice(-4)}</p>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
@@ -165,22 +173,29 @@ export const Dashboard = () => {
           <button className="text-blue-600 text-sm font-medium hover:underline">Ver todas</button>
         </div>
         <div className="space-y-3">
-          {transacciones.map((tx) => (
-            <div key={tx.IdTransaccion} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition-colors">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.Tipo === "deposito" ? 'bg-green-100' : 'bg-red-100'}`}>
-                  {tx.Tipo === "deposito" ? <TrendingUp className="w-5 h-5 text-green-600" /> : <TrendingDown className="w-5 h-5 text-red-600" />}
-                </div>
-                <div>
-                  <p className="font-medium text-gray-900">{tx.Tipo}</p>
-                  <p className="text-sm text-gray-500">{tx.Fecha}</p>
-                </div>
-              </div>
-              <p className={`font-bold ${tx.Tipo === "deposito" ? 'text-green-600' : 'text-red-600'}`}>
-                {tx.Monto > 0 ? '+' : ''}${Math.abs(tx.Monto).toLocaleString()}
-              </p>
+          {transacciones.length === 0 ? (
+            <div className="p-8 text-center">
+              <p className="text-gray-500 mb-2">No hay transacciones registradas</p>
+              <p className="text-sm text-gray-400">Tus movimientos aparecerán aquí</p>
             </div>
-          ))}
+          ) : (
+            transacciones.map((tx) => (
+              <div key={tx.IdTransaccion} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.Tipo === "deposito" ? 'bg-green-100' : 'bg-red-100'}`}>
+                    {tx.Tipo === "deposito" ? <TrendingUp className="w-5 h-5 text-green-600" /> : <TrendingDown className="w-5 h-5 text-red-600" />}
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">{tx.Tipo}</p>
+                    <p className="text-sm text-gray-500">{tx.Fecha}</p>
+                  </div>
+                </div>
+                <p className={`font-bold ${tx.Tipo === "deposito" ? 'text-green-600' : 'text-red-600'}`}>
+                  {tx.Monto > 0 ? '+' : ''}${Math.abs(tx.Monto).toLocaleString()}
+                </p>
+              </div>
+            ))
+          )}
         </div>
       </div>
       {modalTransferencia && (

@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
     const verificarSesion = async () => {
       try {
         const data = await authService.me();
+        console.log("data user", data);
         setUsuario(data); // 🔹 contiene id_usuario, email, etc.
       } catch (error) {
         console.error("Error al verificar sesión:", error);
