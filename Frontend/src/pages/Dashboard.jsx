@@ -145,7 +145,7 @@ export const Dashboard = () => {
           {cuentas.map((cuenta) => (
             <div key={cuenta.IdCuenta} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
               <div>
-                <p className="font-semibold text-gray-900">{cuenta.IdTipoCuenta}</p>
+                <p className="font-semibold text-gray-900">{cuenta.tipoCuenta.Nombre}</p>
                 <p className="text-sm text-gray-500">{cuenta.Alias}</p>
               </div>
               <div className="text-right">
