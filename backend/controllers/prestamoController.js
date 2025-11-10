@@ -95,7 +95,7 @@ export const prestamoController = {
             } catch {
                 errores.general = error.message;
             }
-            return res.status(400).json({ errores });
+            return res.status(404).json({ errores });
         }
     }
 };
