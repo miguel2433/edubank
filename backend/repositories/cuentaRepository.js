@@ -60,11 +60,9 @@ export const cuentaRepository = {
 	async crear(datos){
 		const VerificadorDeDatos = crearCuentaSchema.parse(datos);
 
-		const fechaMySQL = new Date(VerificadorDeDatos.FechaApertura).toISOString().slice(0, 19).replace("T", " ");
 
 		const CuentaAcrear = {
 			...VerificadorDeDatos,
-			FechaApertura: fechaMySQL
 		}
 
 		const [IdCuenta] = await db("Cuenta").insert(CuentaAcrear);
