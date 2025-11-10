@@ -150,7 +150,7 @@ export const Dashboard = () => {
               </div>
               <div className="text-right">
                 <p className="font-bold text-gray-900">
-                  {mostrarSaldo ? `$${cuenta.saldo.toLocaleString()}` : '••••••'}
+                  {mostrarSaldo ? `$${cuenta.Saldo.toLocaleString()}` : '••••••'}
                 </p>
                 <p className="text-xs text-gray-500">{cuenta.CBU.slice(-4)}</p>
               </div>
@@ -178,7 +178,7 @@ export const Dashboard = () => {
                 </div>
               </div>
               <p className={`font-bold ${tx.Monto > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {tx.monto > 0 ? '+' : ''}${Math.abs(tx.Monto).toLocaleString()}
+                {tx.Monto > 0 ? '+' : ''}${Math.abs(tx.Monto).toLocaleString()}
               </p>
             </div>
           ))}
