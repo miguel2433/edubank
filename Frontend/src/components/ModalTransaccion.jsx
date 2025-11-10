@@ -36,13 +36,6 @@ export const ModalTransaccion = ({ cerrar, onTransaccionCreada }) => {
 
   const tiposTransaccion = [
     {
-      tipo: "deposito",
-      nombre: "Depósito",
-      descripcion: "Agregar dinero a una cuenta",
-      icon: ArrowDown,
-      color: "bg-green-500",
-    },
-    {
       tipo: "retiro",
       nombre: "Retiro",
       descripcion: "Extraer dinero de una cuenta",
