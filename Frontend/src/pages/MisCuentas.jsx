@@ -1,20 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Plus, CreditCard } from "lucide-react";
+import { Plus, CreditCard, X, Loader2 } from "lucide-react";
 import { cuentasService } from "../services/cuentasService";
 import { useAuth } from "../context/AuthContext";
+import { ModalNuevaCuenta } from "../components/ModalNuevaCuenta";
 
 export const MisCuentas = () => {
   const { usuario, cargando } = useAuth();
   const [cuentas, setCuentas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+
+  console.log("isModalOpen", isModalOpen);
 
   useEffect(() => {
     const fetchCuentas = async () => {
       if (!usuario) return; // 🔹 Esperar al usuario
       console.log(usuario);
       try {
-        const data = await cuentasService.getCuentasDelUsuario(usuario.IdUsuario);
+        const data = await cuentasService.getCuentasDelUsuario(
+          usuario.IdUsuario
+        );
 
         setCuentas(data);
       } catch (err) {
@@ -28,16 +35,31 @@ export const MisCuentas = () => {
     fetchCuentas();
   }, [usuario]);
 
-  if (cargando || loading) return <p className="text-gray-600">Cargando cuentas...</p>;
+  if (cargando || loading)
+    return <p className="text-gray-600">Cargando cuentas...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
-  if (!usuario) return <p className="text-gray-600">Iniciá sesión para ver tus cuentas.</p>;
+  if (!usuario)
+    return <p className="text-gray-600">Iniciá sesión para ver tus cuentas.</p>;
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
+
+
 
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">Mis Cuentas</h2>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+        >
           <Plus className="w-5 h-5" />
           Nueva Cuenta
         </button>
@@ -56,7 +78,9 @@ export const MisCuentas = () => {
               <div className="flex justify-between items-start mb-8">
                 <div>
                   <p className="text-blue-100 text-sm mb-1">Saldo disponible</p>
-                  <p className="text-3xl font-bold">${cuenta.Saldo.toLocaleString()}</p>
+                  <p className="text-3xl font-bold">
+                    ${cuenta.Saldo.toLocaleString()}
+                  </p>
                 </div>
                 <div className="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
                   <CreditCard className="w-5 h-5" />
@@ -66,7 +90,9 @@ export const MisCuentas = () => {
               <div className="space-y-2">
                 <div>
                   <p className="text-blue-100 text-xs">Tipo de cuenta</p>
-                  <p className="font-semibold">{cuenta.tipoCuenta?.Nombre || "Sin tipo"}</p>
+                  <p className="font-semibold">
+                    {cuenta.tipoCuenta?.Nombre || "Sin tipo"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-blue-100 text-xs">CBU</p>
