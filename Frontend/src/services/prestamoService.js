@@ -18,7 +18,7 @@ export const prestamoService = {
 
     return res.json();
   },
-    async crearCuenta(data) {
+    async crearPrestamo(data) {
     const res = await fetch(`${API_URL}`, {
         method: "POST",
         credentials: "include",
