@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Plus, CreditCard } from "lucide-react";
 import { cuentasService } from "../services/cuentasService";
+import { useAuth } from "../context/AuthContext";
 
 export const MisCuentas = () => {
+  const { usuario, cargando } = useAuth();
   const [cuentas, setCuentas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Simulamos que el idUsuario viene del contexto o de tu auth
-  const idUsuario = 1; // 🔹 Reemplazalo por el ID real del usuario logueado
-
   useEffect(() => {
     const fetchCuentas = async () => {
+      if (!usuario) return; // 🔹 Esperar al usuario
+      console.log(usuario);
       try {
-        const data = await cuentasService.getCuentasDelUsuario(idUsuario);
+        const data = await cuentasService.getCuentasDelUsuario(usuario.IdUsuario);
+
         setCuentas(data);
       } catch (err) {
         console.error(err);
@@ -24,11 +26,15 @@ export const MisCuentas = () => {
     };
 
     fetchCuentas();
-  }, [idUsuario]);
+  }, [usuario]);
 
-  if (loading) return <p className="text-gray-600">Cargando cuentas...</p>;
+  if (cargando || loading) return <p className="text-gray-600">Cargando cuentas...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
+  if (!usuario) return <p className="text-gray-600">Iniciá sesión para ver tus cuentas.</p>;
 
+  if (cuentas.length === 0) {
+    return <p className="text-gray-600">No tenés cuentas registradas.</p>;
+  }
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
