@@ -296,14 +296,16 @@ export const ModalTransaccion = ({ cerrar, onTransaccionCreada }) => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Cuenta Destino
                     </label>
-                    <select
+                    <p className="text-xs text-gray-500 mt-1">* ingrese Alias o CBU</p>
+
+                    {/* <select
                       name="IdCuentaDestino"
                       value={formData.IdCuentaDestino || ""}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     >
-                      <option value="">Seleccione una cuenta</option>
+                      <option value="">Seleccione Alias o CBU</option>
                       {cuentasUsuario
                         .filter(
                           (cuenta) => cuenta.IdCuenta !== formData.IdCuentaOrigen
@@ -314,7 +316,15 @@ export const ModalTransaccion = ({ cerrar, onTransaccionCreada }) => {
                             {cuenta.tipoCuenta?.Nombre}
                           </option>
                         ))}
-                    </select>
+                    </select> */}
+                    <input
+                      type="text"
+                      name="IdCuentaDestino"
+                      value={formData.IdCuentaDestino || ""}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
                   </div>
                 )}
               </div>
