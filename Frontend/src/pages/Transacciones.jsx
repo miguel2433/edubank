@@ -9,37 +9,46 @@ import {
 } from "lucide-react";
 import { transaccionService } from "../services/transacciones";
 import { useAuth } from "../context/AuthContext";
+import { ModalTransaccion } from "../components/ModalTransaccion";
 
 export const Transacciones = () => {
   const [filtroTipo, setFiltroTipo] = useState("todos");
   const [transacciones, setTransacciones] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
+  const [modalAbierto, setModalAbierto] = useState(false);
   const { usuario } = useAuth();
 
-  useEffect(() => {
-    const cargarTransacciones = async () => {
-      try {
-        setCargando(true);
-        const data = await transaccionService.conseguirTransaccionesDelUsuario(
-          1
-        );
-        console.log("transacciones", data);
-        setTransacciones(data);
-      } catch (err) {
-        console.error("Error al cargar transacciones:", err);
-        setError(
-          "No se pudieron cargar las transacciones. Intente nuevamente."
-        );
-      } finally {
-        setCargando(false);
-      }
-    };
+  const cargarTransacciones = async () => {
+    try {
+      setCargando(true);
+      const data = await transaccionService.conseguirTransaccionesDelUsuario(
+        usuario?.IdUsuario
+      );
+      console.log("transacciones", data);
+      setTransacciones(data);
+      setError(null);
+    } catch (err) {
+      console.error("Error al cargar transacciones:", err);
+      setError(
+        "No se pudieron cargar las transacciones. Intente nuevamente."
+      );
+    } finally {
+      setCargando(false);
+    }
+  };
 
+  useEffect(() => {
     if (usuario?.IdUsuario) {
       cargarTransacciones();
     }
   }, [usuario?.IdUsuario]);
+
+  const handleTransaccionCreada = (nuevaTransaccion) => {
+    console.log("Nueva transacción creada:", nuevaTransaccion);
+    // Recargar las transacciones
+    cargarTransacciones();
+  };
 
   const transaccionesFiltradas = transacciones.filter((tx) => {
     // Filtro por tipo de transacción
@@ -93,7 +102,10 @@ export const Transacciones = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-2xl font-bold text-gray-900">Transacciones</h2>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+        <button 
+          onClick={() => setModalAbierto(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+        >
           <Plus className="w-5 h-5" />
           Nueva Transacción
         </button>
@@ -235,6 +247,14 @@ export const Transacciones = () => {
             </div>
           )}
         </div>
+      )}
+
+      {/* Modal de nueva transacción */}
+      {modalAbierto && (
+        <ModalTransaccion
+          cerrar={() => setModalAbierto(false)}
+          onTransaccionCreada={handleTransaccionCreada}
+        />
       )}
     </div>
   );
