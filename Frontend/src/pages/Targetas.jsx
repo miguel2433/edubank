@@ -1,33 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Lock, Plus, Eye, EyeOff, Copy } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { tarjetaService } from "../services/tarjetaService";
 
 export const Tarjetas = () => {
   const [mostrarNumero, setMostrarNumero] = useState({});
+  const { usuario, cargando } = useAuth();
+  const [tarjetas, setTarjetas] = useState([])
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  
+  useEffect(() => {
+     const fetchCuentas = async () => {
+       if (!usuario) return; // 🔹 Esperar al usuario
+       console.log(usuario);
+       try {
+         const data = await tarjetaService.getTarjetasDelUsuario(
+           usuario.IdUsuario
+         );
 
-  const tarjetas = [
-    {
-      id: 1,
-      numero: "4555 5555 4444 3333",
-      tipo: "credito",
-      vencimiento: "12/28",
-      cvv: "123",
-      limiteCredito: 100000,
-      saldoDisponible: 85000,
-      marca: "VISA",
-      activa: true,
-    },
-    {
-      id: 2,
-      numero: "4111 1111 2222 3333",
-      tipo: "debito",
-      vencimiento: "05/27",
-      cvv: "456",
-      limiteCredito: 0,
-      saldoDisponible: 0,
-      marca: "MASTERCARD",
-      activa: true,
-    },
-  ];
+         setTarjetas(data);
+       } catch (err) {
+         console.error(err);
+         setError("No se pudieron cargar las cuentas");
+       } finally {
+         setLoading(false);
+       }
+     };
+
+     fetchCuentas();
+  }, [usuario]);
+
+  if (cargando || loading)
+    return <p className="text-gray-600">Cargando cuentas...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
+  if (!usuario)
+    return <p className="text-gray-600">Iniciá sesión para ver tus cuentas.</p>;
 
   const toggleMostrarNumero = (id) => {
     setMostrarNumero((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -50,11 +58,11 @@ export const Tarjetas = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {tarjetas.map((tarjeta) => (
-          <div key={tarjeta.id} className="relative">
+          <div key={tarjeta.IdTarjeta} className="relative">
             {/* Tarjeta visual */}
             <div
               className={`rounded-2xl p-6 text-white relative overflow-hidden ${
-                tarjeta.tipo === "credito"
+                tarjeta.Tipo === "credito"
                   ? "bg-gradient-to-br from-purple-600 to-purple-900"
                   : "bg-gradient-to-br from-gray-700 to-gray-900"
               }`}
@@ -68,7 +76,7 @@ export const Tarjetas = () => {
                 <div className="flex justify-between items-start mb-8">
                   <div>
                     <p className="text-sm opacity-80">
-                      {tarjeta.tipo === "credito"
+                      {tarjeta.Tipo === "credito"
                         ? "Tarjeta de Crédito"
                         : "Tarjeta de Débito"}
                     </p>
@@ -83,15 +91,15 @@ export const Tarjetas = () => {
                 <div className="mb-6">
                   <div className="flex items-center justify-between">
                     <p className="font-mono text-xl tracking-wider">
-                      {mostrarNumero[tarjeta.id]
-                        ? tarjeta.numero
+                      {mostrarNumero[tarjeta.IdTarjeta]
+                        ? tarjeta.NumeroTarjeta
                         : "•••• •••• •••• " + tarjeta.numero.slice(-4)}
                     </p>
                     <button
-                      onClick={() => toggleMostrarNumero(tarjeta.id)}
+                      onClick={() => toggleMostrarNumero(tarjeta.IdTarjeta)}
                       className="ml-2 p-1 hover:bg-white hover:bg-opacity-20 rounded transition-colors"
                     >
-                      {mostrarNumero[tarjeta.id] ? (
+                      {mostrarNumero[tarjeta.IdTarjeta] ? (
                         <EyeOff className="w-5 h-5" />
                       ) : (
                         <Eye className="w-5 h-5" />
@@ -104,16 +112,16 @@ export const Tarjetas = () => {
                 <div className="flex justify-between items-end">
                   <div>
                     <p className="text-xs opacity-70 mb-1">Titular</p>
-                    <p className="font-semibold">JUAN PÉREZ</p>
+                    <p className="font-semibold">{usuario.Nombre}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-xs opacity-70 mb-1">Vencimiento</p>
-                    <p className="font-semibold">{tarjeta.vencimiento}</p>
+                    <p className="font-semibold">{tarjeta.FechaVencimiento}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-xs opacity-70 mb-1">CVV</p>
                     <p className="font-semibold">
-                      {mostrarNumero[tarjeta.id] ? tarjeta.cvv : "•••"}
+                      {mostrarNumero[tarjeta.IdTarjeta] ? tarjeta.CVV : "•••"}
                     </p>
                   </div>
                 </div>
@@ -129,13 +137,13 @@ export const Tarjetas = () => {
                       Límite de crédito
                     </span>
                     <span className="font-semibold">
-                      ${tarjeta.limiteCredito.toLocaleString()}
+                      ${tarjeta.LimiteCredito.toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Disponible</span>
                     <span className="font-semibold text-green-600">
-                      ${tarjeta.saldoDisponible.toLocaleString()}
+                      ${tarjeta.SaldoDisponible.toLocaleString()}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -143,7 +151,7 @@ export const Tarjetas = () => {
                       className="bg-green-500 h-2 rounded-full"
                       style={{
                         width: `${
-                          (tarjeta.saldoDisponible / tarjeta.limiteCredito) *
+                          (tarjeta.SaldoDisponible / tarjeta.LimiteCredito) *
                           100
                         }%`,
                       }}
@@ -154,7 +162,7 @@ export const Tarjetas = () => {
 
               <div className="flex gap-2 pt-2">
                 <button
-                  onClick={() => copiarNumero(tarjeta.numero)}
+                  onClick={() => copiarNumero(tarjeta.NumeroTarjeta)}
                   className="flex-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
                 >
                   <Copy className="w-4 h-4" />
