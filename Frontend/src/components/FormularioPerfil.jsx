@@ -12,11 +12,12 @@ import {
 } from "lucide-react";
 import { editarPerfilService } from "../services/prefilService";
 
-export const FormularioPerfil = ({}) => {
+export const FormularioPerfil = () => {
   const { usuario, setUsuario } = useAuth();
   const [cargando, setCargando] = useState(false);
-
+  
   const [editando, setEditando] = useState(false);
+
 
   const [datos, setDatos] = useState({
     Nombre: "",
@@ -52,7 +53,7 @@ export const FormularioPerfil = ({}) => {
         Telefono: usuario.Telefono || "",
         Direccion: usuario.Direccion || "",
         DNI: usuario.DNI || "",
-        sucursal: "",
+        sucursal: usuario.sucursal || {},
       });
       setDatosTemp({
         IdUsuario: usuario.IdUsuario,
@@ -61,7 +62,7 @@ export const FormularioPerfil = ({}) => {
         Telefono: usuario.Telefono || "",
         Direccion: usuario.Direccion || "",
         DNI: usuario.DNI || "",
-        sucursal: "",
+        sucursal: usuario.sucursal || {},
       });
     }
   }, [usuario]);
