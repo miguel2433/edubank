@@ -116,13 +116,31 @@ export const cuentaRepository = {
 	},
 	async cuentasDelUsuario(id){
 		const cuentas = await db("Cuenta")
-		  .join("TipoCuenta","Cuenta.IdTipoCuenta","TipoCuenta.IdTipoCuenta")
+			.join("Sucursal", "Cuenta.IdSucursal", "Sucursal.IdSucursal")
+			.join("Usuario", "Cuenta.IdUsuario", "Usuario.IdUsuario")
+			.join("TipoCuenta", "Cuenta.IdTipoCuenta", "TipoCuenta.IdTipoCuenta")
 		  .where({IdUsuario: id});
 		
 		  if(!cuentas){
 			throw new Error("El id del usuario no existe")
 		  }
+		const showCuentas = await Promise.all(
+			cuentas.map(async(cuenta) =>{
+				const usuario = await usuarioRepository.getId(cuenta.IdUsuario);
+				const sucursal = await sucursalRepository.getId(cuenta.IdSucursal);
+				const tipoCuenta = await tipoCuentaRepository.getId(cuenta.IdTipoCuenta);
+
+				const cuentaCompleta ={
+					...cuenta,
+					usuario,
+					sucursal,
+					tipoCuenta
+				}
+
+				return cuentaSchema.parse(cuentaCompleta);
+			})
+		)
+		return showCuentas;
 		
-		return cuentas
 	}
 };
