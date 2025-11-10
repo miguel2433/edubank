@@ -88,5 +88,15 @@ export const transaccionController = {
             console.error("Error en transaccionController.delete:", error);
             res.status(500).json({ message: "Error al eliminar la transacción" });
         }
+    },
+    async getTransaccionesUsuario(req,res){
+        try{
+            const { id }=req.params;
+            const transacciones = await transaccionRepository.transaccionesDelUsuario(id)
+            res.json(transacciones);
+        }catch(error){
+            console.error("Error en transaccionController.getTransaccionesUsuario:", error);
+            res.status(500).json({ message: "Error al traer transacciones del usuario" });
+        }
     }
 };

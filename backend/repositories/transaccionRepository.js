@@ -64,14 +64,9 @@ export const transaccionRepository = {
     async crear(datos) {
         const nuevaTransaccion = CrearTransaccionSchema.parse(datos);
 
-        const fechaMySQL = new Date(nuevaTransaccion.Fecha)
-          .toISOString()
-          .slice(0, 19)
-          .replace("T", " ");
 
         const transaccionParaBD = {
-            ...nuevaTransaccion,
-            Fecha: fechaMySQL
+            ...nuevaTransaccion
         };
 
         const [id] = await db("Transaccion").insert(transaccionParaBD);
@@ -237,5 +232,15 @@ async put(id, datos) {
                 }
                 break;
         }
-    }
+    },
+	async transaccionesDelUsuario(id){
+		const cuentas = await db("Transaccion")
+		  .where({IdUsuario: id});
+		
+		  if(!cuentas){
+			throw new Error("El id del usuario no existe")
+		  }
+		
+		return cuentas
+	}
 };

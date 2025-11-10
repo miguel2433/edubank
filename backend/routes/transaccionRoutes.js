@@ -3,6 +3,7 @@ import { transaccionController } from "../controllers/transaccionController.js";
 
 const router = express.Router();
 
+router.get("/usuario/:id", transaccionController.getTransaccionesUsuario)
 router.get("/", transaccionController.listar);
 router.get("/:id", transaccionController.getId);
 router.post("/", transaccionController.crear);
