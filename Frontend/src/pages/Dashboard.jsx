@@ -1,30 +1,75 @@
-import { useState } from "react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {Eye, EyeOff, TrendingUp, TrendingDown, ArrowUpDown, Plus, DollarSign, CreditCard} from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { ModalTransferencia } from "../components/ModalTransferencia";
+import { cuentasService } from "../services/cuentasService";
+import { transaccionService } from "../services/transacciones";
 
 export const Dashboard = () => {
   
   const [mostrarSaldo, setMostrarSaldo] = useState(true);
   const [modalTransferencia, setModalTransferencia] = useState(false);
+  const [cuentas, setCuentas] = useState([]);
+  const [transacciones, setTransacciones] = useState([]);
+  const { usuario, cargando } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   
-  const cuentas = [
-    { id: 1, tipo: 'Caja de Ahorro', saldo: 150000, cbu: '0000003100012345678901', alias: 'juan.ahorro' },
-    { id: 2, tipo: 'Cuenta Corriente', saldo: 50000, cbu: '0000003200012345678902', alias: 'juan.corriente' },
-  ];
+    useEffect(() => {
+      const fetchCuentas = async () => {
+        if (!usuario) return; //  Esperar al usuario
+        console.log(usuario);
+        try {
+          const data = await cuentasService.getCuentasDelUsuario(
+            usuario.IdUsuario
+          );
 
-  const transaccionesRecientes = [
-    { id: 1, tipo: 'Transferencia recibida', monto: 5000, fecha: '2025-01-15', estado: 'completado' },
-    { id: 2, tipo: 'Pago de servicios', monto: -2500, fecha: '2025-01-14', estado: 'completado' },
-    { id: 3, tipo: 'Retiro', monto: -10000, fecha: '2025-01-13', estado: 'completado' },
-  ];
+          setCuentas(data);
+        } catch (err) {
+          console.error(err);
+          setError("No se pudieron cargar las cuentas");
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchCuentas();
+    }, [usuario]);
+
+    useEffect(() => {
+      const fetchCuentas = async () => {
+        if (!usuario) return; // Esperar al usuario
+        console.log(usuario);
+        try {
+          const data = await transaccionService.conseguirTransaccionesDelUsuario(
+            usuario.IdUsuario
+          );
+
+          setTransacciones(data);
+        } catch (err) {
+          console.error(err);
+          setError("No se pudieron cargar las transacciones");
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchCuentas();
+    }, [usuario]);
+
+
+  if (cargando || loading)
+    return <p className="text-gray-600">Cargando cuentas...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
+  if (!usuario)
+    return <p className="text-gray-600">Iniciá sesión para ver tus cuentas.</p>;
 
   return (
     <div className="space-y-6">
       {/* Bienvenida */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-6 text-white">
-        <h2 className="text-2xl font-bold mb-2">¡Hola, Juan!</h2>
+        <h2 className="text-2xl font-bold mb-2">¡Hola, {usuario.Nombre}!</h2>
         <p className="text-blue-100">Bienvenido a tu banca digital</p>
       </div>
 
@@ -54,7 +99,7 @@ export const Dashboard = () => {
 
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <h3 className="text-gray-600 text-sm font-medium mb-4">Transacciones</h3>
-          <p className="text-3xl font-bold text-gray-900">45</p>
+          <p className="text-3xl font-bold text-gray-900">{transacciones.length}</p>
           <p className="text-sm text-gray-500 mt-2">Este mes</p>
         </div>
       </div>
@@ -98,16 +143,16 @@ export const Dashboard = () => {
         </div>
         <div className="space-y-3">
           {cuentas.map((cuenta) => (
-            <div key={cuenta.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div key={cuenta.IdCuenta} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
               <div>
-                <p className="font-semibold text-gray-900">{cuenta.tipo}</p>
-                <p className="text-sm text-gray-500">{cuenta.alias}</p>
+                <p className="font-semibold text-gray-900">{cuenta.IdTipoCuenta}</p>
+                <p className="text-sm text-gray-500">{cuenta.Alias}</p>
               </div>
               <div className="text-right">
                 <p className="font-bold text-gray-900">
                   {mostrarSaldo ? `$${cuenta.saldo.toLocaleString()}` : '••••••'}
                 </p>
-                <p className="text-xs text-gray-500">{cuenta.cbu.slice(-4)}</p>
+                <p className="text-xs text-gray-500">{cuenta.CBU.slice(-4)}</p>
               </div>
             </div>
           ))}
@@ -121,19 +166,19 @@ export const Dashboard = () => {
           <button className="text-blue-600 text-sm font-medium hover:underline">Ver todas</button>
         </div>
         <div className="space-y-3">
-          {transaccionesRecientes.map((tx) => (
-            <div key={tx.id} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition-colors">
+          {transacciones.map((tx) => (
+            <div key={tx.IdTransaccion} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition-colors">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.monto > 0 ? 'bg-green-100' : 'bg-red-100'}`}>
-                  {tx.monto > 0 ? <TrendingUp className="w-5 h-5 text-green-600" /> : <TrendingDown className="w-5 h-5 text-red-600" />}
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.Monto > 0 ? 'bg-green-100' : 'bg-red-100'}`}>
+                  {tx.Monto > 0 ? <TrendingUp className="w-5 h-5 text-green-600" /> : <TrendingDown className="w-5 h-5 text-red-600" />}
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">{tx.tipo}</p>
-                  <p className="text-sm text-gray-500">{tx.fecha}</p>
+                  <p className="font-medium text-gray-900">{tx.Tipo}</p>
+                  <p className="text-sm text-gray-500">{tx.Fecha}</p>
                 </div>
               </div>
-              <p className={`font-bold ${tx.monto > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {tx.monto > 0 ? '+' : ''}${Math.abs(tx.monto).toLocaleString()}
+              <p className={`font-bold ${tx.Monto > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {tx.monto > 0 ? '+' : ''}${Math.abs(tx.Monto).toLocaleString()}
               </p>
             </div>
           ))}
